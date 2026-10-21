@@ -1,251 +1,245 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full bg-slate-50">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= esc($title ?? 'Event Planner') ?> | CodeIgniter 4</title>
-    <!-- Bootstrap 5.3 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            200: '#c7d2fe',
+                            300: '#a5b4fc',
+                            400: '#818cf8',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            800: '#3730a3',
+                            900: '#312e81',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'Inter', '-apple-system', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Bootstrap Icons (for crisp service & category icons) -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <style>
-        :root {
-            --primary: #4f46e5;
-            --primary-hover: #4338ca;
-            --primary-light: #eef2ff;
-            --body-bg: #f8fafc;
-            --card-border: #e2e8f0;
-        }
-
-        body {
-            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-            background-color: var(--body-bg);
-            color: #1e293b;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .navbar-brand {
-            font-weight: 800;
-            letter-spacing: -0.5px;
-            color: #0f172a !important;
-        }
-
-        .navbar {
-            background-color: #ffffff;
-            border-bottom: 1px solid var(--card-border);
-        }
-
-        .nav-link {
-            font-weight: 600;
-            color: #475569;
-            padding: 0.5rem 1rem !important;
-            border-radius: 8px;
-            transition: all 0.15s ease;
-        }
-
-        .nav-link:hover, .nav-link.active {
-            color: var(--primary) !important;
-            background-color: var(--primary-light);
-        }
-
-        .card {
-            border: 1px solid var(--card-border);
-            border-radius: 12px;
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.04);
-        }
-
-        .btn-primary {
-            background-color: var(--primary);
-            border-color: var(--primary);
-            font-weight: 600;
-        }
-
-        .btn-primary:hover, .btn-primary:focus {
-            background-color: var(--primary-hover);
-            border-color: var(--primary-hover);
-        }
-
-        .badge-status {
-            padding: 0.4em 0.75em;
-            font-weight: 600;
-            font-size: 0.8rem;
-            border-radius: 20px;
-        }
-
-        .status-planning { background-color: #e0f2fe; color: #0369a1; }
-        .status-confirmed { background-color: #dcfce7; color: #15803d; }
-        .status-in_progress { background-color: #fef9c3; color: #854d0e; }
-        .status-completed { background-color: #f1f5f9; color: #475569; }
-        .status-cancelled { background-color: #fee2e2; color: #b91c1c; }
-        .status-draft { background-color: #f3f4f6; color: #4b5563; }
-
-        .status-paid { background-color: #dcfce7; color: #15803d; }
-        .status-partial { background-color: #fef9c3; color: #854d0e; }
-        .status-pending { background-color: #fee2e2; color: #b91c1c; }
-
-        .category-pill {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 4px 10px;
-            background: #f1f5f9;
-            border-radius: 6px;
-            font-size: 0.825rem;
-            font-weight: 600;
-            color: #334155;
-        }
-
-        .metric-card {
-            transition: transform 0.15s ease, box-shadow 0.15s ease;
-        }
-        .metric-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.08);
-        }
-
-        .icon-box {
-            width: 48px;
-            height: 48px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.35rem;
-        }
-
-        footer {
-            margin-top: auto;
-            border-top: 1px solid var(--card-border);
-            background: #ffffff;
-            color: #64748b;
-        }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
     </style>
 </head>
-<body>
+<body class="min-h-full flex flex-col text-slate-800 antialiased selection:bg-indigo-500 selection:text-white">
 
     <!-- NAVBAR -->
-    <nav class="navbar navbar-expand-lg sticky-top shadow-sm">
-        <div class="container">
-            <a class="navbar-brand d-flex align-items-center gap-2" href="<?= site_url('/') ?>">
-                <span class="icon-box bg-primary text-white" style="width: 36px; height: 36px; font-size: 1.1rem; border-radius: 8px;">
-                    <i class="bi bi-calendar-event-fill"></i>
-                </span>
-                <span>Event<span class="text-primary">Master</span></span>
-            </a>
+    <header class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-slate-200 shadow-xs">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- LOGO & BRAND -->
+                <div class="flex items-center gap-8">
+                    <a href="<?= site_url('/') ?>" class="flex items-center gap-2.5 group">
+                        <div class="w-9 h-9 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-sm group-hover:bg-indigo-700 transition">
+                            <i class="bi bi-calendar-event-fill text-lg"></i>
+                        </div>
+                        <span class="text-xl font-extrabold tracking-tight text-slate-900">
+                            Event<span class="text-indigo-600">Master</span>
+                        </span>
+                    </a>
 
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+                    <!-- DESKTOP NAVIGATION -->
+                    <nav class="hidden md:flex items-center space-x-1">
+                        <a href="<?= site_url('/') ?>"
+                           class="px-3 py-2 rounded-lg text-sm font-semibold transition <?= uri_string() === '' ? 'text-indigo-600 bg-indigo-50' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' ?>">
+                            <i class="bi bi-speedometer2 mr-1.5"></i>Dashboard
+                        </a>
+                        <a href="<?= site_url('events') ?>"
+                           class="px-3 py-2 rounded-lg text-sm font-semibold transition <?= str_starts_with(uri_string(), 'events') ? 'text-indigo-600 bg-indigo-50' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' ?>">
+                            <i class="bi bi-calendar-check mr-1.5"></i>Events
+                        </a>
+                        <a href="<?= site_url('providers') ?>"
+                           class="px-3 py-2 rounded-lg text-sm font-semibold transition <?= str_starts_with(uri_string(), 'providers') ? 'text-indigo-600 bg-indigo-50' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' ?>">
+                            <i class="bi bi-people mr-1.5"></i>Providers
+                        </a>
+                        <a href="<?= site_url('categories') ?>"
+                           class="px-3 py-2 rounded-lg text-sm font-semibold transition <?= str_starts_with(uri_string(), 'categories') ? 'text-indigo-600 bg-indigo-50' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' ?>">
+                            <i class="bi bi-grid mr-1.5"></i>Categories
+                        </a>
+                    </nav>
+                </div>
 
-            <div class="collapse navbar-collapse" id="navbarMain">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-3 gap-1">
-                    <li class="nav-item">
-                        <a class="nav-link <?= uri_string() === '' ? 'active' : '' ?>" href="<?= site_url('/') ?>">
-                            <i class="bi bi-speedometer2 me-1"></i> Dashboard
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link <?= str_starts_with(uri_string(), 'events') ? 'active' : '' ?>" href="<?= site_url('events') ?>">
-                            <i class="bi bi-calendar-check me-1"></i> Events
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link <?= str_starts_with(uri_string(), 'providers') ? 'active' : '' ?>" href="<?= site_url('providers') ?>">
-                            <i class="bi bi-people me-1"></i> Providers
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link <?= str_starts_with(uri_string(), 'categories') ? 'active' : '' ?>" href="<?= site_url('categories') ?>">
-                            <i class="bi bi-grid me-1"></i> Categories
-                        </a>
-                    </li>
-                </ul>
-
-                <div class="d-flex align-items-center gap-2">
-                    <a href="<?= site_url('events/new') ?>" class="btn btn-primary d-inline-flex align-items-center gap-1">
+                <!-- RIGHT ACTION BUTTONS -->
+                <div class="hidden md:flex items-center gap-2.5">
+                    <a href="<?= site_url('events/new') ?>"
+                       class="inline-flex items-center gap-1.5 px-3.5 py-2 text-sm font-semibold text-white bg-indigo-600 rounded-lg shadow-sm hover:bg-indigo-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 transition">
                         <i class="bi bi-plus-lg"></i>
                         <span>New Event</span>
                     </a>
-                    <a href="<?= site_url('providers/new') ?>" class="btn btn-outline-secondary d-inline-flex align-items-center gap-1">
+                    <a href="<?= site_url('providers/new') ?>"
+                       class="inline-flex items-center gap-1.5 px-3.5 py-2 text-sm font-semibold text-slate-700 bg-white border border-slate-300 rounded-lg shadow-2xs hover:bg-slate-50 transition">
                         <i class="bi bi-person-plus"></i>
                         <span>New Provider</span>
                     </a>
                 </div>
+
+                <!-- MOBILE MENU TOGGLE -->
+                <div class="flex md:hidden">
+                    <button type="button" onclick="toggleMobileNav()"
+                            class="p-2 rounded-lg text-slate-500 hover:text-slate-700 hover:bg-slate-100 focus:outline-hidden">
+                        <i class="bi bi-list text-2xl"></i>
+                    </button>
+                </div>
             </div>
         </div>
-    </nav>
 
-    <!-- MAIN CONTAINER -->
-    <main class="py-4 flex-grow-1">
-        <div class="container">
-
-            <!-- FLASH ALERTS -->
-            <?php if (session()->getFlashdata('success')): ?>
-                <div class="alert alert-success alert-dismissible fade show d-flex align-items-center gap-2 shadow-sm" role="alert">
-                    <i class="bi bi-check-circle-fill text-success fs-5"></i>
-                    <div><?= session()->getFlashdata('success') ?></div>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            <?php endif; ?>
-
-            <?php if (session()->getFlashdata('error')): ?>
-                <div class="alert alert-danger alert-dismissible fade show d-flex align-items-center gap-2 shadow-sm" role="alert">
-                    <i class="bi bi-exclamation-triangle-fill text-danger fs-5"></i>
-                    <div><?= session()->getFlashdata('error') ?></div>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            <?php endif; ?>
-
-            <?php if (session()->getFlashdata('errors')): ?>
-                <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
-                    <div class="d-flex align-items-center gap-2 mb-1">
-                        <i class="bi bi-exclamation-triangle-fill text-danger fs-5"></i>
-                        <strong>Please check the following errors:</strong>
-                    </div>
-                    <ul class="mb-0 ps-4">
-                        <?php foreach (session()->getFlashdata('errors') as $err): ?>
-                            <li><?= esc($err) ?></li>
-                        <?php endforeach; ?>
-                    </ul>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            <?php endif; ?>
-
-            <!-- PAGE CONTENT -->
-            <?= $this->renderSection('content') ?>
-
+        <!-- MOBILE MENU DROPDOWN -->
+        <div id="mobile-nav" class="hidden md:hidden border-t border-slate-200 bg-white px-4 pt-2 pb-4 space-y-1">
+            <a href="<?= site_url('/') ?>" class="block px-3 py-2 rounded-md text-base font-medium <?= uri_string() === '' ? 'text-indigo-600 bg-indigo-50 font-semibold' : 'text-slate-700 hover:bg-slate-100' ?>">
+                <i class="bi bi-speedometer2 mr-2"></i>Dashboard
+            </a>
+            <a href="<?= site_url('events') ?>" class="block px-3 py-2 rounded-md text-base font-medium <?= str_starts_with(uri_string(), 'events') ? 'text-indigo-600 bg-indigo-50 font-semibold' : 'text-slate-700 hover:bg-slate-100' ?>">
+                <i class="bi bi-calendar-check mr-2"></i>Events
+            </a>
+            <a href="<?= site_url('providers') ?>" class="block px-3 py-2 rounded-md text-base font-medium <?= str_starts_with(uri_string(), 'providers') ? 'text-indigo-600 bg-indigo-50 font-semibold' : 'text-slate-700 hover:bg-slate-100' ?>">
+                <i class="bi bi-people mr-2"></i>Providers
+            </a>
+            <a href="<?= site_url('categories') ?>" class="block px-3 py-2 rounded-md text-base font-medium <?= str_starts_with(uri_string(), 'categories') ? 'text-indigo-600 bg-indigo-50 font-semibold' : 'text-slate-700 hover:bg-slate-100' ?>">
+                <i class="bi bi-grid mr-2"></i>Categories
+            </a>
+            <div class="pt-3 border-t border-slate-200 flex flex-col gap-2">
+                <a href="<?= site_url('events/new') ?>" class="w-full text-center px-4 py-2 text-sm font-semibold text-white bg-indigo-600 rounded-lg hover:bg-indigo-700">
+                    <i class="bi bi-plus-lg mr-1"></i>New Event
+                </a>
+                <a href="<?= site_url('providers/new') ?>" class="w-full text-center px-4 py-2 text-sm font-semibold text-slate-700 bg-slate-100 rounded-lg hover:bg-slate-200">
+                    <i class="bi bi-person-plus mr-1"></i>New Provider
+                </a>
+            </div>
         </div>
+    </header>
+
+    <!-- MAIN BODY CONTAINER -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+        <!-- FLASH ALERTS -->
+        <?php if (session()->getFlashdata('success')): ?>
+            <div id="flash-alert-success" class="mb-5 flex items-center justify-between p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 shadow-2xs">
+                <div class="flex items-center gap-3">
+                    <i class="bi bi-check-circle-fill text-emerald-600 text-lg"></i>
+                    <span class="text-sm font-medium"><?= session()->getFlashdata('success') ?></span>
+                </div>
+                <button type="button" onclick="document.getElementById('flash-alert-success').remove()" class="text-emerald-500 hover:text-emerald-700 p-1">
+                    <i class="bi bi-x-lg text-sm"></i>
+                </button>
+            </div>
+        <?php endif; ?>
+
+        <?php if (session()->getFlashdata('error')): ?>
+            <div id="flash-alert-error" class="mb-5 flex items-center justify-between p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 shadow-2xs">
+                <div class="flex items-center gap-3">
+                    <i class="bi bi-exclamation-triangle-fill text-rose-600 text-lg"></i>
+                    <span class="text-sm font-medium"><?= session()->getFlashdata('error') ?></span>
+                </div>
+                <button type="button" onclick="document.getElementById('flash-alert-error').remove()" class="text-rose-500 hover:text-rose-700 p-1">
+                    <i class="bi bi-x-lg text-sm"></i>
+                </button>
+            </div>
+        <?php endif; ?>
+
+        <?php if (session()->getFlashdata('errors')): ?>
+            <div id="flash-alert-errors" class="mb-5 p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 shadow-2xs">
+                <div class="flex items-center justify-between mb-2">
+                    <div class="flex items-center gap-2 font-semibold text-sm text-rose-900">
+                        <i class="bi bi-exclamation-octagon-fill text-rose-600"></i>
+                        <span>Please correct the following errors:</span>
+                    </div>
+                    <button type="button" onclick="document.getElementById('flash-alert-errors').remove()" class="text-rose-500 hover:text-rose-700 p-1">
+                        <i class="bi bi-x-lg text-sm"></i>
+                    </button>
+                </div>
+                <ul class="list-disc list-inside text-sm space-y-1 text-rose-700 pl-2">
+                    <?php foreach (session()->getFlashdata('errors') as $err): ?>
+                        <li><?= esc($err) ?></li>
+                    <?php endforeach; ?>
+                </ul>
+            </div>
+        <?php endif; ?>
+
+        <!-- PAGE CONTENT -->
+        <?= $this->renderSection('content') ?>
+
     </main>
 
     <!-- FOOTER -->
-    <footer class="py-3">
-        <div class="container d-flex flex-wrap justify-content-between align-items-center">
-            <div class="d-flex align-items-center gap-2">
-                <span class="fw-bold text-dark">EventMaster</span>
-                <span class="text-muted">&bull; Powered by CodeIgniter <?= CodeIgniter\CodeIgniter::CI_VERSION ?></span>
+    <footer class="mt-auto bg-white border-t border-slate-200 py-6">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-slate-500">
+            <div class="flex items-center gap-2">
+                <span class="font-bold text-slate-800">EventMaster</span>
+                <span>&bull; Powered by CodeIgniter <?= CodeIgniter\CodeIgniter::CI_VERSION ?> & Tailwind CSS</span>
             </div>
-            <div class="text-muted small">
-                <span>Manage Events &bull; Catering &bull; Venues &bull; DJs &bull; AV &bull; Photography</span>
+            <div>
+                <span>Catering &bull; Venues &bull; DJs &bull; Photography &bull; Lighting &bull; Audio</span>
             </div>
         </div>
     </footer>
 
-    <!-- Bootstrap 5.3 JS Bundle -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
+    <!-- LIGHTWEIGHT JAVASCRIPT HELPERS (MODALS, MOBILE MENU, AJAX) -->
     <script>
-        // Enable tooltips
-        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
-        [...tooltipTriggerList].map(el => new bootstrap.Tooltip(el));
+        function toggleMobileNav() {
+            const nav = document.getElementById('mobile-nav');
+            nav.classList.toggle('hidden');
+        }
 
-        // Ajax Task status toggle
+        // Modal open / close handlers
+        function openModal(id) {
+            const modal = document.getElementById(id);
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                document.body.classList.add('overflow-hidden');
+            }
+        }
+
+        function closeModal(id) {
+            const modal = document.getElementById(id);
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+                document.body.classList.remove('overflow-hidden');
+            }
+        }
+
+        // Close modal when clicking on backdrop
+        window.addEventListener('click', function(e) {
+            if (e.target.hasAttribute('data-modal-backdrop')) {
+                closeModal(e.target.id);
+            }
+        });
+
+        // Close modal on ESC key
+        window.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('[data-modal-backdrop]:not(.hidden)').forEach(modal => {
+                    closeModal(modal.id);
+                });
+            }
+        });
+
+        // AJAX Task toggle
         function toggleTaskStatus(taskId, checkboxEl) {
             fetch('<?= site_url('events/tasks/') ?>' + taskId + '/toggle', {
                 method: 'POST',
@@ -259,9 +253,11 @@
                     const label = document.getElementById('task-label-' + taskId);
                     if (label) {
                         if (data.newStatus === 'completed') {
-                            label.classList.add('text-decoration-line-through', 'text-muted');
+                            label.classList.add('line-through', 'text-slate-400');
+                            label.classList.remove('text-slate-800');
                         } else {
-                            label.classList.remove('text-decoration-line-through', 'text-muted');
+                            label.classList.remove('line-through', 'text-slate-400');
+                            label.classList.add('text-slate-800');
                         }
                     }
                 }

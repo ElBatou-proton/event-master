@@ -1,6 +1,6 @@
 # EventMaster - Event & Vendor Planner App
 
-A modern, full-featured Event Planning and Vendor Tracking web application built with **CodeIgniter 4 (v4.7.5)**, **PHP 8.2+**, **SQLite / MySQL**, and **Bootstrap 5.3**.
+A modern, full-featured Event Planning and Vendor Tracking web application built with **CodeIgniter 4 (v4.7.5)**, **PHP 8.2+**, **SQLite / MySQL**, and **Tailwind CSS**.
 
 Designed specifically for event managers and coordinators to seamlessly organize events and manage service providers across multiple categories (**Catering**, **Venues**, **DJs & Live Music**, **Photography & Video**, **Lighting & AV**, **Floral & Decor**, and more).
 
@@ -88,7 +88,7 @@ event_planner/
 │   │   ├── EventProviderModel.php # Event-to-provider pivot tracking
 │   │   └── EventTaskModel.php  # Event checklist milestones
 │   └── Views/
-│       ├── layouts/main.php    # Responsive Bootstrap 5.3 master layout
+│       ├── layouts/main.php    # Responsive Tailwind CSS master layout
 │       ├── dashboard/index.php # Main KPI dashboard
 │       ├── events/             # List, show, form views
 │       ├── providers/          # Directory, profile, form views

@@ -2,14 +2,15 @@
 
 <?= $this->section('content') ?>
 
-<!-- HEADER -->
-<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+<!-- PAGE HEADER -->
+<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
     <div>
-        <h2 class="h3 fw-bold mb-1">Service & Provider Categories</h2>
-        <p class="text-muted mb-0">Organize your vendors by service specialty (Catering, Venues, DJs, AV, Photography, etc.).</p>
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Service & Vendor Categories</h1>
+        <p class="text-slate-500 text-sm mt-1">Organize providers into specialties (Catering, Venues, DJs, Photography, Floral, AV, etc.).</p>
     </div>
     <div>
-        <button type="button" class="btn btn-primary d-inline-flex align-items-center gap-1 shadow-sm" data-bs-toggle="modal" data-bs-target="#newCategoryModal">
+        <button type="button" onclick="openModal('modal-add-category')"
+                class="inline-flex items-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-xl shadow-xs transition">
             <i class="bi bi-folder-plus"></i>
             <span>Add Category</span>
         </button>
@@ -17,85 +18,100 @@
 </div>
 
 <!-- CATEGORIES GRID -->
-<div class="row g-3 mb-4">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-8">
     <?php foreach ($categories as $cat): ?>
-        <div class="col-md-6 col-lg-4">
-            <div class="card h-100 shadow-sm border metric-card p-3 d-flex flex-column justify-content-between">
-                <div>
-                    <div class="d-flex justify-content-between align-items-start mb-3">
-                        <div class="d-flex align-items-center gap-2">
-                            <span class="icon-box bg-primary-subtle text-primary" style="width: 44px; height: 44px; font-size: 1.25rem;">
-                                <i class="bi <?= esc($cat['icon'] ?: 'bi-tag') ?>"></i>
-                            </span>
-                            <div>
-                                <h5 class="fw-bold mb-0 text-dark"><?= esc($cat['name']) ?></h5>
-                                <span class="badge bg-secondary-subtle text-secondary small"><?= esc($cat['slug']) ?></span>
-                            </div>
+        <div class="bg-white rounded-2xl border border-slate-200/80 shadow-2xs p-5 hover:shadow-md transition flex flex-col justify-between">
+            <div>
+                <div class="flex items-start justify-between gap-2 mb-3">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-lg">
+                            <i class="bi <?= esc($cat['icon'] ?: 'bi-tag') ?>"></i>
                         </div>
-                        <?php if ($cat['provider_count'] == 0): ?>
-                            <form method="post" action="<?= site_url('categories/' . $cat['id'] . '/delete') ?>" onsubmit="return confirm('Delete this empty category?');">
-                                <?= csrf_field() ?>
-                                <button type="submit" class="btn btn-sm text-danger p-0" title="Delete category">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                            </form>
-                        <?php endif; ?>
+                        <div>
+                            <h3 class="font-bold text-slate-900 text-base leading-tight"><?= esc($cat['name']) ?></h3>
+                            <span class="text-[11px] font-semibold text-slate-400"><?= esc($cat['slug']) ?></span>
+                        </div>
                     </div>
-
-                    <p class="small text-muted mb-3" style="min-height: 40px;">
-                        <?= esc($cat['description'] ?? 'Event service specialty providers.') ?>
-                    </p>
+                    <?php if ($cat['provider_count'] == 0): ?>
+                        <form method="post" action="<?= site_url('categories/' . $cat['id'] . '/delete') ?>" onsubmit="return confirm('Delete this empty category?');">
+                            <?= csrf_field() ?>
+                            <button type="submit" class="p-1 text-slate-300 hover:text-rose-600 transition" title="Delete Category">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </form>
+                    <?php endif; ?>
                 </div>
 
-                <div class="d-flex justify-content-between align-items-center pt-2 border-top">
-                    <span class="small fw-semibold text-dark">
-                        <i class="bi bi-people-fill text-primary me-1"></i><?= esc($cat['provider_count']) ?> registered vendors
-                    </span>
-                    <a href="<?= site_url('providers?category_id=' . $cat['id']) ?>" class="btn btn-sm btn-outline-primary">
-                        Browse Vendors &rarr;
-                    </a>
-                </div>
+                <p class="text-xs text-slate-600 leading-relaxed line-clamp-3 mb-4" style="min-height: 48px;">
+                    <?= esc($cat['description'] ?? 'Event service specialty providers.') ?>
+                </p>
+            </div>
+
+            <div class="flex items-center justify-between pt-3 border-t border-slate-100 text-xs">
+                <span class="font-semibold text-slate-600">
+                    <i class="bi bi-people-fill text-indigo-600 mr-1"></i><?= esc($cat['provider_count']) ?> vendors
+                </span>
+                <a href="<?= site_url('providers?category_id=' . $cat['id']) ?>"
+                   class="font-semibold text-indigo-600 hover:text-indigo-800 transition">
+                    Browse Vendors &rarr;
+                </a>
             </div>
         </div>
     <?php endforeach; ?>
 </div>
 
-<!-- MODAL: NEW CATEGORY -->
-<div class="modal fade" id="newCategoryModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <form method="post" action="<?= site_url('categories') ?>">
-                <?= csrf_field() ?>
-                <div class="modal-header">
-                    <h5 class="modal-title fw-bold">Create New Service Category</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Category Name <span class="text-danger">*</span></label>
-                        <input type="text" name="name" class="form-control" placeholder="e.g. Fireworks & Special FX" required>
-                    </div>
+<!-- MODAL: ADD CATEGORY -->
+<div id="modal-add-category" data-modal-backdrop class="hidden fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl text-left border border-slate-200" onclick="event.stopPropagation()">
+        <form method="post" action="<?= site_url('categories') ?>">
+            <?= csrf_field() ?>
+            <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
+                <h3 class="text-base font-bold text-slate-900">Create Service Category</h3>
+                <button type="button" onclick="closeModal('modal-add-category')" class="text-slate-400 hover:text-slate-600">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
 
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Icon (Bootstrap Icon Class)</label>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-stars"></i></span>
-                            <input type="text" name="icon" class="form-control" placeholder="bi-stars" value="bi-tag">
-                        </div>
-                        <div class="form-text">Choose from <a href="https://icons.getbootstrap.com/" target="_blank">Bootstrap Icons</a> (e.g. bi-cup-hot, bi-camera, bi-music-note-beamed).</div>
-                    </div>
+            <div class="space-y-4 text-sm">
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                        Category Name <span class="text-rose-500">*</span>
+                    </label>
+                    <input type="text" name="name" required placeholder="e.g. Fireworks & Special FX"
+                           class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:border-indigo-500 transition">
+                </div>
 
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Description</label>
-                        <textarea name="description" rows="3" class="form-control" placeholder="Describe the type of vendors in this category..."></textarea>
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                        Icon Class
+                    </label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 pointer-events-none">
+                            <i class="bi bi-stars"></i>
+                        </span>
+                        <input type="text" name="icon" value="bi-tag"
+                               class="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:border-indigo-500 transition">
                     </div>
+                    <p class="text-[11px] text-slate-400 mt-1">Bootstrap Icons: bi-cup-hot, bi-buildings, bi-music-note-beamed, bi-camera-reels, bi-speaker, etc.</p>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary fw-semibold">Create Category</button>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Description</label>
+                    <textarea name="description" rows="3" placeholder="Describe the type of vendors in this category..."
+                              class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:border-indigo-500 transition"></textarea>
                 </div>
-            </form>
-        </div>
+            </div>
+
+            <div class="flex items-center justify-end gap-2.5 mt-6 pt-4 border-t border-slate-100">
+                <button type="button" onclick="closeModal('modal-add-category')"
+                        class="px-4 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition">
+                    Cancel
+                </button>
+                <button type="submit" class="px-4 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl transition">
+                    Create Category
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 

@@ -3,580 +3,660 @@
 <?= $this->section('content') ?>
 
 <!-- BREADCRUMB & TOP ACTIONS -->
-<div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb mb-0">
-            <li class="breadcrumb-item"><a href="<?= site_url('events') ?>">Events</a></li>
-            <li class="breadcrumb-item active" aria-current="page"><?= esc($event['title']) ?></li>
-        </ol>
+<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
+    <nav class="flex text-xs font-semibold text-slate-500 gap-2 items-center">
+        <a href="<?= site_url('events') ?>" class="hover:text-indigo-600">Events</a>
+        <span>/</span>
+        <span class="text-slate-800 truncate max-w-[200px] sm:max-w-none"><?= esc($event['title']) ?></span>
     </nav>
-    <div class="d-flex gap-2">
-        <a href="<?= site_url('events/' . $event['id'] . '/edit') ?>" class="btn btn-outline-secondary btn-sm d-inline-flex align-items-center gap-1">
+    <div class="flex items-center gap-2">
+        <a href="<?= site_url('events/' . $event['id'] . '/edit') ?>"
+           class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 shadow-2xs transition">
             <i class="bi bi-pencil"></i> Edit Details
         </a>
-        <button type="button" class="btn btn-primary btn-sm d-inline-flex align-items-center gap-1" data-bs-toggle="modal" data-bs-target="#assignProviderModal">
+        <button type="button" onclick="openModal('modal-assign-provider')"
+                class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 shadow-2xs transition">
             <i class="bi bi-person-plus-fill"></i> Assign Provider
         </button>
-        <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteEventModal">
+        <button type="button" onclick="openModal('modal-delete-event')"
+                class="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold text-rose-600 bg-rose-50 border border-rose-200 rounded-lg hover:bg-rose-100 transition" title="Delete Event">
             <i class="bi bi-trash"></i>
         </button>
     </div>
 </div>
 
 <!-- EVENT OVERVIEW HERO CARD -->
-<div class="card mb-4 border-0 shadow-sm overflow-hidden">
-    <div class="card-body p-4 bg-white">
-        <div class="row g-4 align-items-center">
-            <div class="col-lg-8">
-                <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
-                    <span class="badge bg-primary text-uppercase px-2 py-1"><?= esc($event['event_type']) ?></span>
-                    <span class="badge-status status-<?= esc($event['status']) ?> text-capitalize">
-                        <i class="bi bi-circle-fill me-1" style="font-size: 0.5rem;"></i><?= esc(str_replace('_', ' ', $event['status'])) ?>
-                    </span>
-                    <?php
-                        $eventDate = new DateTime($event['event_date']);
-                        $today = new DateTime('today');
-                        $diff = (int) $today->diff($eventDate)->format('%r%a');
-                    ?>
-                    <?php if ($diff === 0): ?>
-                        <span class="badge bg-danger">Event is Today!</span>
-                    <?php elseif ($diff > 0): ?>
-                        <span class="badge bg-light text-primary border">In <?= $diff ?> days</span>
-                    <?php else: ?>
-                        <span class="badge bg-light text-muted border"><?= abs($diff) ?> days ago</span>
-                    <?php endif; ?>
-                </div>
+<div class="bg-white rounded-2xl border border-slate-200/80 shadow-2xs p-6 mb-6">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+        <div class="lg:col-span-8">
+            <div class="flex flex-wrap items-center gap-2 mb-3">
+                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-indigo-50 text-indigo-700 border border-indigo-200">
+                    <?= esc($event['event_type']) ?>
+                </span>
 
-                <h2 class="h3 fw-bold text-dark mb-2"><?= esc($event['title']) ?></h2>
+                <?php
+                    $statusClasses = [
+                        'planning'    => 'bg-sky-50 text-sky-700 border-sky-200',
+                        'confirmed'   => 'bg-emerald-50 text-emerald-700 border-emerald-200',
+                        'in_progress' => 'bg-amber-50 text-amber-700 border-amber-200',
+                        'completed'   => 'bg-slate-100 text-slate-700 border-slate-200',
+                        'cancelled'   => 'bg-rose-50 text-rose-700 border-rose-200',
+                        'draft'       => 'bg-gray-100 text-gray-700 border-gray-200',
+                    ];
+                    $badgeClass = $statusClasses[$event['status']] ?? 'bg-slate-100 text-slate-700';
 
-                <div class="d-flex flex-wrap gap-4 text-muted small mt-3">
-                    <div>
-                        <i class="bi bi-calendar3 text-primary me-1"></i>
-                        <strong class="text-dark"><?= $eventDate->format('l, F j, Y') ?></strong>
-                    </div>
-                    <?php if ($event['start_time']): ?>
-                        <div>
-                            <i class="bi bi-clock text-primary me-1"></i>
-                            <?= substr($event['start_time'], 0, 5) ?><?= $event['end_time'] ? ' - ' . substr($event['end_time'], 0, 5) : '' ?>
-                        </div>
-                    <?php endif; ?>
-                    <div>
-                        <i class="bi bi-geo-alt-fill text-danger me-1"></i>
-                        <?= esc($event['location_venue'] ?? 'Venue To Be Announced') ?>
-                    </div>
-                    <div>
-                        <i class="bi bi-people-fill text-info me-1"></i>
-                        <?= esc($event['guest_count']) ?> Expected Guests
-                    </div>
-                </div>
+                    $eventDate = new DateTime($event['event_date']);
+                    $today = new DateTime('today');
+                    $diff = (int) $today->diff($eventDate)->format('%r%a');
+                ?>
+                <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold border <?= $badgeClass ?> capitalize">
+                    <?= esc(str_replace('_', ' ', $event['status'])) ?>
+                </span>
 
-                <?php if (!empty($event['description'])): ?>
-                    <div class="mt-3 text-secondary border-start border-3 border-primary ps-3 py-1 small">
-                        <?= nl2br(esc($event['description'])) ?>
-                    </div>
+                <?php if ($diff === 0): ?>
+                    <span class="px-2 py-0.5 rounded-full text-xs font-bold bg-rose-600 text-white">Event is Today!</span>
+                <?php elseif ($diff > 0): ?>
+                    <span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-600 border border-slate-200">In <?= $diff ?> days</span>
+                <?php else: ?>
+                    <span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-400 border border-slate-200"><?= abs($diff) ?> days ago</span>
                 <?php endif; ?>
             </div>
 
-            <!-- CLIENT CONTACT BOX -->
-            <div class="col-lg-4">
-                <div class="bg-light p-3 rounded border">
-                    <h6 class="fw-bold small text-muted text-uppercase mb-2">
-                        <i class="bi bi-person-badge text-primary me-1"></i> Client Information
-                    </h6>
-                    <div class="fw-bold text-dark fs-6 mb-1"><?= esc($event['client_name']) ?></div>
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight mb-3">
+                <?= esc($event['title']) ?>
+            </h1>
+
+            <div class="flex flex-wrap gap-x-6 gap-y-2 text-xs text-slate-600">
+                <div class="flex items-center gap-1.5">
+                    <i class="bi bi-calendar3 text-indigo-600 text-sm"></i>
+                    <strong class="text-slate-900"><?= $eventDate->format('l, F j, Y') ?></strong>
+                </div>
+                <?php if ($event['start_time']): ?>
+                    <div class="flex items-center gap-1.5">
+                        <i class="bi bi-clock text-indigo-600 text-sm"></i>
+                        <span><?= substr($event['start_time'], 0, 5) ?><?= $event['end_time'] ? ' - ' . substr($event['end_time'], 0, 5) : '' ?></span>
+                    </div>
+                <?php endif; ?>
+                <div class="flex items-center gap-1.5">
+                    <i class="bi bi-geo-alt-fill text-rose-500 text-sm"></i>
+                    <span><?= esc($event['location_venue'] ?? 'Venue To Be Announced') ?></span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                    <i class="bi bi-people-fill text-sky-500 text-sm"></i>
+                    <span><?= esc($event['guest_count']) ?> Expected Guests</span>
+                </div>
+            </div>
+
+            <?php if (!empty($event['description'])): ?>
+                <div class="mt-4 p-3 rounded-xl bg-slate-50 border-l-4 border-indigo-600 text-xs text-slate-600 leading-relaxed">
+                    <?= nl2br(esc($event['description'])) ?>
+                </div>
+            <?php endif; ?>
+        </div>
+
+        <!-- CLIENT INFO CARD -->
+        <div class="lg:col-span-4">
+            <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80">
+                <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2 flex items-center gap-1.5">
+                    <i class="bi bi-person-badge text-indigo-600"></i> Client Details
+                </h4>
+                <div class="font-bold text-slate-900 text-base mb-2"><?= esc($event['client_name']) ?></div>
+                <div class="space-y-1.5 text-xs text-slate-600">
                     <?php if ($event['client_email']): ?>
-                        <div class="small mb-1">
-                            <i class="bi bi-envelope text-muted me-1"></i>
-                            <a href="mailto:<?= esc($event['client_email']) ?>" class="text-decoration-none text-dark"><?= esc($event['client_email']) ?></a>
+                        <div class="flex items-center gap-2 truncate">
+                            <i class="bi bi-envelope text-slate-400"></i>
+                            <a href="mailto:<?= esc($event['client_email']) ?>" class="hover:text-indigo-600 text-slate-700"><?= esc($event['client_email']) ?></a>
                         </div>
                     <?php endif; ?>
                     <?php if ($event['client_phone']): ?>
-                        <div class="small">
-                            <i class="bi bi-telephone text-muted me-1"></i>
-                            <a href="tel:<?= esc($event['client_phone']) ?>" class="text-decoration-none text-dark"><?= esc($event['client_phone']) ?></a>
-                        </div>
-                    <?php endif; ?>
-                    <?php if (!empty($event['notes'])): ?>
-                        <div class="mt-2 pt-2 border-top small text-muted">
-                            <strong>Planner Notes:</strong> <?= esc($event['notes']) ?>
+                        <div class="flex items-center gap-2">
+                            <i class="bi bi-telephone text-slate-400"></i>
+                            <a href="tel:<?= esc($event['client_phone']) ?>" class="hover:text-indigo-600 text-slate-700"><?= esc($event['client_phone']) ?></a>
                         </div>
                     <?php endif; ?>
                 </div>
+                <?php if (!empty($event['notes'])): ?>
+                    <div class="mt-3 pt-3 border-t border-slate-200 text-xs text-slate-500">
+                        <strong class="text-slate-700">Notes:</strong> <?= esc($event['notes']) ?>
+                    </div>
+                <?php endif; ?>
             </div>
         </div>
     </div>
 </div>
 
 <!-- FINANCIAL TRACKER & BUDGET OVERVIEW -->
-<div class="card mb-4">
-    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-        <div class="d-flex align-items-center gap-2">
-            <i class="bi bi-cash-stack text-success fs-5"></i>
-            <h5 class="card-title mb-0 fw-bold">Financial & Budget Tracker</h5>
+<div class="bg-white rounded-2xl border border-slate-200/80 shadow-2xs p-6 mb-6">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pb-4 mb-5 border-b border-slate-100">
+        <div class="flex items-center gap-2">
+            <i class="bi bi-cash-stack text-emerald-600 text-lg"></i>
+            <h2 class="text-base font-bold text-slate-900">Financial Tracker & Budget Variance</h2>
         </div>
         <div>
             <?php if ($event['budget_variance'] < 0): ?>
-                <span class="badge bg-danger-subtle text-danger px-3 py-2 fw-semibold">
-                    <i class="bi bi-exclamation-triangle-fill me-1"></i> Over Budget by $<?= number_format(abs($event['budget_variance']), 2) ?>
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200">
+                    <i class="bi bi-exclamation-triangle-fill"></i> Over Budget by $<?= number_format(abs($event['budget_variance']), 2) ?>
                 </span>
             <?php else: ?>
-                <span class="badge bg-success-subtle text-success px-3 py-2 fw-semibold">
-                    <i class="bi bi-shield-check me-1"></i> Under Budget: $<?= number_format($event['budget_variance'], 2) ?> remaining
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    <i class="bi bi-check-circle-fill"></i> Within Budget: $<?= number_format($event['budget_variance'], 2) ?> remaining
                 </span>
             <?php endif; ?>
         </div>
     </div>
-    <div class="card-body">
-        <div class="row g-3 mb-3 text-center">
-            <div class="col-6 col-md-3">
-                <div class="p-3 bg-light rounded border">
-                    <span class="text-muted small text-uppercase fw-semibold">Target Budget</span>
-                    <h4 class="fw-bold text-dark my-1">$<?= number_format($event['budget'], 2) ?></h4>
-                    <span class="small text-muted">Total set for event</span>
-                </div>
-            </div>
-            <div class="col-6 col-md-3">
-                <div class="p-3 bg-light rounded border">
-                    <span class="text-muted small text-uppercase fw-semibold">Committed Cost</span>
-                    <h4 class="fw-bold my-1 <?= $event['budget_variance'] < 0 ? 'text-danger' : 'text-primary' ?>">
-                        $<?= number_format($event['total_provider_cost'], 2) ?>
-                    </h4>
-                    <span class="small text-muted"><?= count($assignedProviders) ?> providers hired</span>
-                </div>
-            </div>
-            <div class="col-6 col-md-3">
-                <div class="p-3 bg-light rounded border">
-                    <span class="text-muted small text-uppercase fw-semibold">Deposits Paid</span>
-                    <h4 class="fw-bold text-success my-1">$<?= number_format($event['total_deposit_paid'], 2) ?></h4>
-                    <span class="small text-muted">Confirmed payments</span>
-                </div>
-            </div>
-            <div class="col-6 col-md-3">
-                <div class="p-3 bg-light rounded border">
-                    <span class="text-muted small text-uppercase fw-semibold">Unpaid Balance</span>
-                    <h4 class="fw-bold text-warning-emphasis my-1">$<?= number_format($event['remaining_balance'], 2) ?></h4>
-                    <span class="small text-muted">Due to vendors</span>
-                </div>
-            </div>
+
+    <!-- 4 SUMMARY CARDS -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-5 text-center">
+        <div class="p-4 bg-slate-50 rounded-xl border border-slate-200/80">
+            <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Target Budget</span>
+            <h3 class="text-2xl font-extrabold text-slate-900 mt-1">$<?= number_format($event['budget'], 2) ?></h3>
+            <span class="text-[11px] text-slate-500 mt-0.5 block">Approved budget</span>
         </div>
 
-        <!-- PROGRESS BAR -->
-        <?php
-            $budgetPercent = $event['budget'] > 0 ? round(($event['total_provider_cost'] / $event['budget']) * 100) : 0;
-            $paidPercent = $event['budget'] > 0 ? round(($event['total_deposit_paid'] / $event['budget']) * 100) : 0;
-        ?>
-        <div class="d-flex justify-content-between small text-muted mb-1">
-            <span>Budget Allocation (<?= $budgetPercent ?>% of $<?= number_format($event['budget'], 2) ?>)</span>
-            <span>Deposits Cleared: <?= $paidPercent ?>%</span>
+        <div class="p-4 bg-slate-50 rounded-xl border border-slate-200/80">
+            <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Committed Costs</span>
+            <h3 class="text-2xl font-extrabold mt-1 <?= $event['budget_variance'] < 0 ? 'text-rose-600' : 'text-indigo-600' ?>">
+                $<?= number_format($event['total_provider_cost'], 2) ?>
+            </h3>
+            <span class="text-[11px] text-slate-500 mt-0.5 block"><?= count($assignedProviders) ?> providers hired</span>
         </div>
-        <div class="progress" style="height: 10px;">
-            <div class="progress-bar <?= $event['budget_variance'] < 0 ? 'bg-danger' : 'bg-primary' ?>"
-                 role="progressbar" style="width: <?= min($budgetPercent, 100) ?>%"></div>
+
+        <div class="p-4 bg-slate-50 rounded-xl border border-slate-200/80">
+            <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Deposits Paid</span>
+            <h3 class="text-2xl font-extrabold text-emerald-600 mt-1">$<?= number_format($event['total_deposit_paid'], 2) ?></h3>
+            <span class="text-[11px] text-slate-500 mt-0.5 block">Cleared payments</span>
         </div>
+
+        <div class="p-4 bg-slate-50 rounded-xl border border-slate-200/80">
+            <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Unpaid Balance</span>
+            <h3 class="text-2xl font-extrabold text-amber-600 mt-1">$<?= number_format($event['remaining_balance'], 2) ?></h3>
+            <span class="text-[11px] text-slate-500 mt-0.5 block">Remaining vendor dues</span>
+        </div>
+    </div>
+
+    <!-- PROGRESS BAR -->
+    <?php
+        $budgetPercent = $event['budget'] > 0 ? round(($event['total_provider_cost'] / $event['budget']) * 100) : 0;
+        $paidPercent = $event['budget'] > 0 ? round(($event['total_deposit_paid'] / $event['budget']) * 100) : 0;
+        $barColor = $event['budget_variance'] < 0 ? 'bg-rose-500' : 'bg-indigo-600';
+    ?>
+    <div class="flex items-center justify-between text-xs text-slate-500 mb-1.5 font-medium">
+        <span>Allocation: <?= $budgetPercent ?>% of target budget</span>
+        <span>Deposits cleared: <?= $paidPercent ?>%</span>
+    </div>
+    <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+        <div class="<?= $barColor ?> h-2.5 rounded-full transition-all" style="width: <?= min($budgetPercent, 100) ?>%"></div>
     </div>
 </div>
 
-<!-- TWO COLUMNS: ASSIGNED PROVIDERS & TASKS -->
-<div class="row g-4">
+<!-- ASSIGNED PROVIDERS & TASKS GRID -->
+<div class="grid grid-cols-1 gap-6">
+
     <!-- ASSIGNED PROVIDERS TABLE -->
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header bg-white py-3 d-flex flex-wrap justify-content-between align-items-center gap-2">
-                <div class="d-flex align-items-center gap-2">
-                    <i class="bi bi-people-fill text-primary fs-5"></i>
-                    <h5 class="card-title mb-0 fw-bold">Assigned Service Providers & Vendors</h5>
-                    <span class="badge bg-primary-subtle text-primary ms-1"><?= count($assignedProviders) ?></span>
-                </div>
-                <button type="button" class="btn btn-primary btn-sm d-inline-flex align-items-center gap-1 shadow-sm" data-bs-toggle="modal" data-bs-target="#assignProviderModal">
-                    <i class="bi bi-plus-lg"></i> Assign Provider
+    <div class="bg-white rounded-2xl border border-slate-200/80 shadow-2xs overflow-hidden">
+        <div class="px-6 py-4 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-2">
+                <i class="bi bi-people-fill text-indigo-600 text-lg"></i>
+                <h2 class="text-base font-bold text-slate-900">Assigned Service Providers</h2>
+                <span class="px-2 py-0.5 text-xs font-bold rounded-full bg-indigo-50 text-indigo-700">
+                    <?= count($assignedProviders) ?>
+                </span>
+            </div>
+            <button type="button" onclick="openModal('modal-assign-provider')"
+                    class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-2xs transition">
+                <i class="bi bi-plus-lg"></i> Assign Provider
+            </button>
+        </div>
+
+        <?php if (empty($assignedProviders)): ?>
+            <div class="text-center py-12 px-4">
+                <i class="bi bi-people text-4xl text-slate-300 block mb-2"></i>
+                <p class="text-sm font-medium text-slate-600 mb-3">No vendors assigned to this event yet.</p>
+                <button type="button" onclick="openModal('modal-assign-provider')"
+                        class="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 bg-indigo-600 text-white rounded-lg">
+                    Assign Catering, Venue, DJ, etc.
                 </button>
             </div>
-            <div class="card-body p-0">
-                <?php if (empty($assignedProviders)): ?>
-                    <div class="text-center py-5 text-muted">
-                        <i class="bi bi-people fs-1 d-block mb-2"></i>
-                        <p class="mb-2">No service providers assigned to this event yet.</p>
-                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#assignProviderModal">
-                            Assign Catering, Venue, DJ, etc.
-                        </button>
-                    </div>
-                <?php else: ?>
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Category & Provider</th>
-                                    <th>Service Description</th>
-                                    <th>Agreed Cost</th>
-                                    <th>Deposit Paid</th>
-                                    <th>Balance</th>
-                                    <th>Payment</th>
-                                    <th>Contract</th>
-                                    <th class="text-end">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php foreach ($assignedProviders as $ep): ?>
-                                    <?php $balance = (float)$ep['agreed_cost'] - (float)$ep['deposit_paid']; ?>
-                                    <tr>
-                                        <td>
-                                            <div class="d-flex align-items-center gap-2">
-                                                <span class="icon-box bg-light text-primary" style="width: 34px; height: 34px; font-size: 1rem; border-radius: 6px;">
-                                                    <i class="bi <?= esc($ep['category_icon'] ?? 'bi-tag') ?>"></i>
-                                                </span>
-                                                <div>
-                                                    <a href="<?= site_url('providers/' . $ep['provider_id']) ?>" class="fw-bold text-dark text-decoration-none">
-                                                        <?= esc($ep['provider_name']) ?>
-                                                    </a>
-                                                    <div class="small text-muted"><?= esc($ep['category_name'] ?? 'General') ?></div>
+        <?php else: ?>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse text-sm">
+                    <thead class="bg-slate-50 text-slate-500 uppercase font-semibold text-[11px] tracking-wider border-b border-slate-100">
+                        <tr>
+                            <th class="px-6 py-3.5">Category & Provider</th>
+                            <th class="px-4 py-3.5">Service Description</th>
+                            <th class="px-4 py-3.5">Agreed Fee</th>
+                            <th class="px-4 py-3.5">Deposit Paid</th>
+                            <th class="px-4 py-3.5">Balance</th>
+                            <th class="px-4 py-3.5">Payment</th>
+                            <th class="px-4 py-3.5">Contract</th>
+                            <th class="px-6 py-3.5 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 text-slate-700">
+                        <?php foreach ($assignedProviders as $ep): ?>
+                            <?php
+                                $balance = (float)$ep['agreed_cost'] - (float)$ep['deposit_paid'];
+                                $payBadge = [
+                                    'paid'    => 'bg-emerald-50 text-emerald-700 border-emerald-200',
+                                    'partial' => 'bg-amber-50 text-amber-700 border-amber-200',
+                                    'pending' => 'bg-rose-50 text-rose-700 border-rose-200',
+                                ];
+                                $payClass = $payBadge[$ep['payment_status']] ?? 'bg-slate-100 text-slate-700';
+                            ?>
+                            <tr class="hover:bg-slate-50/80 transition">
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-sm shadow-2xs">
+                                            <i class="bi <?= esc($ep['category_icon'] ?? 'bi-tag') ?>"></i>
+                                        </div>
+                                        <div>
+                                            <a href="<?= site_url('providers/' . $ep['provider_id']) ?>" class="font-bold text-slate-900 hover:text-indigo-600 transition block">
+                                                <?= esc($ep['provider_name']) ?>
+                                            </a>
+                                            <span class="text-xs text-slate-400"><?= esc($ep['category_name'] ?? 'General') ?></span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-4">
+                                    <div class="text-xs font-medium text-slate-800"><?= esc($ep['service_description'] ?? 'Event Service') ?></div>
+                                    <?php if (!empty($ep['notes'])): ?>
+                                        <div class="text-[11px] text-slate-400 truncate max-w-[200px]" title="<?= esc($ep['notes']) ?>">
+                                            <?= esc($ep['notes']) ?>
+                                        </div>
+                                    <?php endif; ?>
+                                </td>
+                                <td class="px-4 py-4 whitespace-nowrap font-bold text-slate-900">
+                                    $<?= number_format($ep['agreed_cost'], 2) ?>
+                                </td>
+                                <td class="px-4 py-4 whitespace-nowrap font-semibold text-emerald-600">
+                                    $<?= number_format($ep['deposit_paid'], 2) ?>
+                                </td>
+                                <td class="px-4 py-4 whitespace-nowrap font-semibold <?= $balance > 0 ? 'text-amber-600' : 'text-slate-400' ?>">
+                                    $<?= number_format($balance, 2) ?>
+                                </td>
+                                <td class="px-4 py-4 whitespace-nowrap">
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold border <?= $payClass ?> capitalize">
+                                        <?= esc($ep['payment_status']) ?>
+                                    </span>
+                                </td>
+                                <td class="px-4 py-4 whitespace-nowrap">
+                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium bg-slate-100 text-slate-600 border border-slate-200 capitalize">
+                                        <i class="bi bi-file-earmark-text text-[10px]"></i> <?= esc($ep['contract_status']) ?>
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 text-right whitespace-nowrap">
+                                    <div class="inline-flex items-center gap-1.5">
+                                        <button type="button" onclick="openModal('modal-edit-prov-<?= $ep['id'] ?>')"
+                                                class="p-1.5 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition" title="Edit Assignment">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button type="button" onclick="openModal('modal-remove-prov-<?= $ep['id'] ?>')"
+                                                class="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition" title="Remove Assignment">
+                                            <i class="bi bi-x-lg"></i>
+                                        </button>
+                                    </div>
+
+                                    <!-- EDIT ASSIGNMENT MODAL -->
+                                    <div id="modal-edit-prov-<?= $ep['id'] ?>" data-modal-backdrop class="hidden fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
+                                        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl text-left border border-slate-200" onclick="event.stopPropagation()">
+                                            <form method="post" action="<?= site_url('events/' . $event['id'] . '/providers/' . $ep['id']) ?>">
+                                                <?= csrf_field() ?>
+                                                <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
+                                                    <h3 class="text-base font-bold text-slate-900">Edit Assignment: <?= esc($ep['provider_name']) ?></h3>
+                                                    <button type="button" onclick="closeModal('modal-edit-prov-<?= $ep['id'] ?>')" class="text-slate-400 hover:text-slate-600">
+                                                        <i class="bi bi-x-lg"></i>
+                                                    </button>
                                                 </div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="small text-dark fw-medium"><?= esc($ep['service_description'] ?? 'Standard service') ?></div>
-                                            <?php if (!empty($ep['notes'])): ?>
-                                                <div class="small text-muted text-truncate" style="max-width: 200px;" title="<?= esc($ep['notes']) ?>">
-                                                    <?= esc($ep['notes']) ?>
+
+                                                <div class="space-y-4 text-sm">
+                                                    <div>
+                                                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Service Description</label>
+                                                        <input type="text" name="service_description" value="<?= esc($ep['service_description']) ?>"
+                                                               class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:border-indigo-500 transition">
+                                                    </div>
+
+                                                    <div class="grid grid-cols-2 gap-3">
+                                                        <div>
+                                                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Agreed Fee ($)</label>
+                                                            <input type="number" step="0.01" min="0" name="agreed_cost" value="<?= esc($ep['agreed_cost']) ?>"
+                                                                   class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:border-indigo-500 transition">
+                                                        </div>
+                                                        <div>
+                                                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Deposit Paid ($)</label>
+                                                            <input type="number" step="0.01" min="0" name="deposit_paid" value="<?= esc($ep['deposit_paid']) ?>"
+                                                                   class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:border-indigo-500 transition">
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="grid grid-cols-2 gap-3">
+                                                        <div>
+                                                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Payment Status</label>
+                                                            <select name="payment_status" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:border-indigo-500 transition">
+                                                                <option value="pending" <?= $ep['payment_status'] === 'pending' ? 'selected' : '' ?>>Pending</option>
+                                                                <option value="partial" <?= $ep['payment_status'] === 'partial' ? 'selected' : '' ?>>Partial</option>
+                                                                <option value="paid" <?= $ep['payment_status'] === 'paid' ? 'selected' : '' ?>>Paid in Full</option>
+                                                            </select>
+                                                        </div>
+                                                        <div>
+                                                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Contract Status</label>
+                                                            <select name="contract_status" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:border-indigo-500 transition">
+                                                                <option value="draft" <?= $ep['contract_status'] === 'draft' ? 'selected' : '' ?>>Draft</option>
+                                                                <option value="sent" <?= $ep['contract_status'] === 'sent' ? 'selected' : '' ?>>Sent</option>
+                                                                <option value="signed" <?= $ep['contract_status'] === 'signed' ? 'selected' : '' ?>>Signed</option>
+                                                                <option value="completed" <?= $ep['contract_status'] === 'completed' ? 'selected' : '' ?>>Completed</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+
+                                                    <div>
+                                                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Notes / Terms</label>
+                                                        <textarea name="notes" rows="2" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:border-indigo-500 transition"><?= esc($ep['notes']) ?></textarea>
+                                                    </div>
                                                 </div>
-                                            <?php endif; ?>
-                                        </td>
-                                        <td class="fw-bold text-dark">
-                                            $<?= number_format($ep['agreed_cost'], 2) ?>
-                                        </td>
-                                        <td class="text-success fw-semibold">
-                                            $<?= number_format($ep['deposit_paid'], 2) ?>
-                                        </td>
-                                        <td class="fw-semibold <?= $balance > 0 ? 'text-warning-emphasis' : 'text-muted' ?>">
-                                            $<?= number_format($balance, 2) ?>
-                                        </td>
-                                        <td>
-                                            <span class="badge-status status-<?= esc($ep['payment_status']) ?> text-capitalize">
-                                                <?= esc($ep['payment_status']) ?>
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <span class="badge bg-light text-secondary border text-capitalize">
-                                                <i class="bi bi-file-earmark-text me-1"></i><?= esc($ep['contract_status']) ?>
-                                            </span>
-                                        </td>
-                                        <td class="text-end">
-                                            <div class="btn-group btn-group-sm">
-                                                <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#editProviderModal-<?= $ep['id'] ?>" title="Edit Cost & Status">
-                                                    <i class="bi bi-pencil"></i>
-                                                </button>
-                                                <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#removeProviderModal-<?= $ep['id'] ?>" title="Unassign Provider">
+
+                                                <div class="flex items-center justify-end gap-2.5 mt-6 pt-4 border-t border-slate-100">
+                                                    <button type="button" onclick="closeModal('modal-edit-prov-<?= $ep['id'] ?>')"
+                                                            class="px-4 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition">
+                                                        Cancel
+                                                    </button>
+                                                    <button type="submit" class="px-4 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl transition">
+                                                        Save Changes
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+
+                                    <!-- REMOVE ASSIGNMENT MODAL -->
+                                    <div id="modal-remove-prov-<?= $ep['id'] ?>" data-modal-backdrop class="hidden fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
+                                        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl text-left border border-slate-200" onclick="event.stopPropagation()">
+                                            <div class="flex items-center justify-between mb-4">
+                                                <div class="w-10 h-10 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center text-lg">
+                                                    <i class="bi bi-person-x-fill"></i>
+                                                </div>
+                                                <button type="button" onclick="closeModal('modal-remove-prov-<?= $ep['id'] ?>')" class="text-slate-400 hover:text-slate-600">
                                                     <i class="bi bi-x-lg"></i>
                                                 </button>
                                             </div>
-
-                                            <!-- Edit Assignment Modal -->
-                                            <div class="modal fade" id="editProviderModal-<?= $ep['id'] ?>" tabindex="-1" aria-hidden="true">
-                                                <div class="modal-dialog modal-dialog-centered text-start">
-                                                    <div class="modal-content">
-                                                        <form method="post" action="<?= site_url('events/' . $event['id'] . '/providers/' . $ep['id']) ?>">
-                                                            <?= csrf_field() ?>
-                                                            <div class="modal-header">
-                                                                <h5 class="modal-title fw-bold">Edit Assignment: <?= esc($ep['provider_name']) ?></h5>
-                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                            </div>
-                                                            <div class="modal-body">
-                                                                <div class="mb-3">
-                                                                    <label class="form-label fw-semibold">Service Description</label>
-                                                                    <input type="text" name="service_description" class="form-control" value="<?= esc($ep['service_description']) ?>">
-                                                                </div>
-                                                                <div class="row g-2 mb-3">
-                                                                    <div class="col-6">
-                                                                        <label class="form-label fw-semibold">Agreed Cost ($)</label>
-                                                                        <input type="number" step="0.01" min="0" name="agreed_cost" class="form-control" value="<?= esc($ep['agreed_cost']) ?>">
-                                                                    </div>
-                                                                    <div class="col-6">
-                                                                        <label class="form-label fw-semibold">Deposit Paid ($)</label>
-                                                                        <input type="number" step="0.01" min="0" name="deposit_paid" class="form-control" value="<?= esc($ep['deposit_paid']) ?>">
-                                                                    </div>
-                                                                </div>
-                                                                <div class="row g-2 mb-3">
-                                                                    <div class="col-6">
-                                                                        <label class="form-label fw-semibold">Payment Status</label>
-                                                                        <select name="payment_status" class="form-select">
-                                                                            <option value="pending" <?= $ep['payment_status'] === 'pending' ? 'selected' : '' ?>>Pending</option>
-                                                                            <option value="partial" <?= $ep['payment_status'] === 'partial' ? 'selected' : '' ?>>Partial</option>
-                                                                            <option value="paid" <?= $ep['payment_status'] === 'paid' ? 'selected' : '' ?>>Paid in Full</option>
-                                                                        </select>
-                                                                    </div>
-                                                                    <div class="col-6">
-                                                                        <label class="form-label fw-semibold">Contract Status</label>
-                                                                        <select name="contract_status" class="form-select">
-                                                                            <option value="draft" <?= $ep['contract_status'] === 'draft' ? 'selected' : '' ?>>Draft</option>
-                                                                            <option value="sent" <?= $ep['contract_status'] === 'sent' ? 'selected' : '' ?>>Sent</option>
-                                                                            <option value="signed" <?= $ep['contract_status'] === 'signed' ? 'selected' : '' ?>>Signed</option>
-                                                                            <option value="completed" <?= $ep['contract_status'] === 'completed' ? 'selected' : '' ?>>Completed</option>
-                                                                        </select>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="mb-2">
-                                                                    <label class="form-label fw-semibold">Notes / Deliverables</label>
-                                                                    <textarea name="notes" rows="2" class="form-control"><?= esc($ep['notes']) ?></textarea>
-                                                                </div>
-                                                            </div>
-                                                            <div class="modal-footer">
-                                                                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
-                                                                <button type="submit" class="btn btn-primary">Save Changes</button>
-                                                            </div>
-                                                        </form>
-                                                    </div>
-                                                </div>
+                                            <h3 class="text-lg font-bold text-slate-900">Remove Provider?</h3>
+                                            <p class="text-sm text-slate-500 mt-2">
+                                                Are you sure you want to unassign <strong><?= esc($ep['provider_name']) ?></strong> from this event?
+                                            </p>
+                                            <div class="flex items-center justify-end gap-2.5 mt-6 pt-4 border-t border-slate-100">
+                                                <button type="button" onclick="closeModal('modal-remove-prov-<?= $ep['id'] ?>')"
+                                                        class="px-4 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition">
+                                                    Cancel
+                                                </button>
+                                                <form method="post" action="<?= site_url('events/' . $event['id'] . '/providers/' . $ep['id'] . '/delete') ?>">
+                                                    <?= csrf_field() ?>
+                                                    <button type="submit" class="px-4 py-2 text-xs font-semibold text-white bg-rose-600 hover:bg-rose-700 rounded-xl transition">
+                                                        Yes, Remove
+                                                    </button>
+                                                </form>
                                             </div>
-
-                                            <!-- Remove Assignment Modal -->
-                                            <div class="modal fade" id="removeProviderModal-<?= $ep['id'] ?>" tabindex="-1" aria-hidden="true">
-                                                <div class="modal-dialog modal-dialog-centered text-start">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <h5 class="modal-title fw-bold text-danger">Remove Provider Assignment</h5>
-                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                        </div>
-                                                        <div class="modal-body">
-                                                            <p>Are you sure you want to remove <strong><?= esc($ep['provider_name']) ?></strong> from this event?</p>
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
-                                                            <form method="post" action="<?= site_url('events/' . $event['id'] . '/providers/' . $ep['id'] . '/delete') ?>">
-                                                                <?= csrf_field() ?>
-                                                                <button type="submit" class="btn btn-danger">Yes, Remove</button>
-                                                            </form>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
-                    </div>
-                <?php endif; ?>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
             </div>
-        </div>
+        <?php endif; ?>
     </div>
 
     <!-- EVENT CHECKLIST & TASKS -->
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header bg-white py-3 d-flex flex-wrap justify-content-between align-items-center gap-2">
-                <div class="d-flex align-items-center gap-2">
-                    <i class="bi bi-check2-circle text-success fs-5"></i>
-                    <h5 class="card-title mb-0 fw-bold">Event Checklist & Tasks</h5>
-                    <span class="badge bg-success-subtle text-success ms-1">
-                        <?= $event['completed_tasks'] ?> / <?= $event['total_tasks'] ?> Done (<?= $event['task_percentage'] ?>%)
-                    </span>
-                </div>
-                <button type="button" class="btn btn-outline-primary btn-sm d-inline-flex align-items-center gap-1" data-bs-toggle="modal" data-bs-target="#addTaskModal">
-                    <i class="bi bi-plus-lg"></i> Add Task
+    <div class="bg-white rounded-2xl border border-slate-200/80 shadow-2xs p-6">
+        <div class="flex flex-wrap items-center justify-between gap-3 pb-4 mb-4 border-b border-slate-100">
+            <div class="flex items-center gap-2">
+                <i class="bi bi-check2-circle text-emerald-600 text-lg"></i>
+                <h2 class="text-base font-bold text-slate-900">Checklist & Milestone Tasks</h2>
+                <span class="px-2.5 py-0.5 text-xs font-bold rounded-full bg-emerald-50 text-emerald-700">
+                    <?= $event['completed_tasks'] ?> / <?= $event['total_tasks'] ?> Done (<?= $event['task_percentage'] ?>%)
+                </span>
+            </div>
+            <button type="button" onclick="openModal('modal-add-task')"
+                    class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 shadow-2xs transition">
+                <i class="bi bi-plus-lg"></i> Add Task
+            </button>
+        </div>
+
+        <?php if ($event['total_tasks'] > 0): ?>
+            <div class="w-full bg-slate-100 rounded-full h-1.5 mb-5 overflow-hidden">
+                <div class="bg-emerald-500 h-1.5 rounded-full transition-all" style="width: <?= $event['task_percentage'] ?>%"></div>
+            </div>
+        <?php endif; ?>
+
+        <?php if (empty($tasks)): ?>
+            <div class="text-center py-8">
+                <i class="bi bi-card-checklist text-3xl text-slate-300 block mb-2"></i>
+                <p class="text-sm font-medium text-slate-500 mb-2">No tasks added to the checklist yet.</p>
+                <button type="button" onclick="openModal('modal-add-task')"
+                        class="text-xs font-semibold text-indigo-600 hover:text-indigo-800">
+                    Add first milestone &rarr;
                 </button>
             </div>
-            <div class="card-body">
-                <?php if ($event['total_tasks'] > 0): ?>
-                    <div class="progress mb-3" style="height: 6px;">
-                        <div class="progress-bar bg-success" role="progressbar" style="width: <?= $event['task_percentage'] ?>%"></div>
-                    </div>
-                <?php endif; ?>
-
-                <?php if (empty($tasks)): ?>
-                    <div class="text-center py-4 text-muted">
-                        <i class="bi bi-card-checklist fs-2 d-block mb-1"></i>
-                        <p class="mb-2">No tasks added to the checklist yet.</p>
-                        <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addTaskModal">Add First Task</button>
-                    </div>
-                <?php else: ?>
-                    <div class="list-group list-group-flush">
-                        <?php foreach ($tasks as $task): ?>
-                            <div class="list-group-item px-0 py-2 d-flex flex-wrap align-items-center justify-content-between gap-2 border-bottom">
-                                <div class="d-flex align-items-center gap-3">
-                                    <input class="form-check-input mt-0 fs-5" type="checkbox"
-                                           onchange="toggleTaskStatus(<?= $task['id'] ?>, this)"
-                                           <?= $task['status'] === 'completed' ? 'checked' : '' ?>>
-                                    <div>
-                                        <span id="task-label-<?= $task['id'] ?>" class="fw-medium text-dark <?= $task['status'] === 'completed' ? 'text-decoration-line-through text-muted' : '' ?>">
-                                            <?= esc($task['title']) ?>
+        <?php else: ?>
+            <div class="divide-y divide-slate-100">
+                <?php foreach ($tasks as $task): ?>
+                    <div class="py-3 flex items-center justify-between gap-4 group">
+                        <div class="flex items-start gap-3">
+                            <input type="checkbox"
+                                   onchange="toggleTaskStatus(<?= $task['id'] ?>, this)"
+                                   <?= $task['status'] === 'completed' ? 'checked' : '' ?>
+                                   class="mt-1 h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-600 cursor-pointer">
+                            <div>
+                                <span id="task-label-<?= $task['id'] ?>"
+                                      class="text-sm font-medium text-slate-800 leading-snug <?= $task['status'] === 'completed' ? 'line-through text-slate-400' : '' ?>">
+                                    <?= esc($task['title']) ?>
+                                </span>
+                                <div class="flex flex-wrap items-center gap-2 mt-1 text-xs text-slate-500">
+                                    <?php if ($task['provider_name']): ?>
+                                        <span class="inline-flex items-center gap-1 px-1.5 py-0.2 rounded bg-slate-100 text-slate-600 text-[10px] font-semibold border border-slate-200">
+                                            <i class="bi bi-person"></i><?= esc($task['provider_name']) ?>
                                         </span>
-                                        <div class="d-flex flex-wrap align-items-center gap-2 small text-muted mt-1">
-                                            <?php if ($task['provider_name']): ?>
-                                                <span class="badge bg-light text-secondary border">
-                                                    <i class="bi bi-person me-1"></i><?= esc($task['provider_name']) ?>
-                                                </span>
-                                            <?php endif; ?>
-                                            <?php if ($task['due_date']): ?>
-                                                <span><i class="bi bi-calendar-event me-1"></i>Due <?= date('M j, Y', strtotime($task['due_date'])) ?></span>
-                                            <?php endif; ?>
-                                            <?php if ($task['priority'] === 'high'): ?>
-                                                <span class="badge bg-danger-subtle text-danger">High Priority</span>
-                                            <?php elseif ($task['priority'] === 'medium'): ?>
-                                                <span class="badge bg-warning-subtle text-warning-emphasis">Medium</span>
-                                            <?php else: ?>
-                                                <span class="badge bg-light text-muted">Low</span>
-                                            <?php endif; ?>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div>
-                                    <form method="post" action="<?= site_url('events/' . $event['id'] . '/tasks/' . $task['id'] . '/delete') ?>" onsubmit="return confirm('Delete this task?');">
-                                        <?= csrf_field() ?>
-                                        <button type="submit" class="btn btn-sm text-danger p-0" title="Delete Task">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </form>
+                                    <?php endif; ?>
+                                    <?php if ($task['due_date']): ?>
+                                        <span><i class="bi bi-calendar-event mr-1 text-slate-400"></i>Due <?= date('M j, Y', strtotime($task['due_date'])) ?></span>
+                                    <?php endif; ?>
+                                    <?php if ($task['priority'] === 'high'): ?>
+                                        <span class="px-1.5 py-0.2 rounded bg-rose-50 text-rose-600 font-bold text-[10px]">High</span>
+                                    <?php elseif ($task['priority'] === 'medium'): ?>
+                                        <span class="px-1.5 py-0.2 rounded bg-amber-50 text-amber-700 font-semibold text-[10px]">Medium</span>
+                                    <?php else: ?>
+                                        <span class="px-1.5 py-0.2 rounded bg-slate-100 text-slate-500 text-[10px]">Low</span>
+                                    <?php endif; ?>
                                 </div>
                             </div>
-                        <?php endforeach; ?>
+                        </div>
+
+                        <form method="post" action="<?= site_url('events/' . $event['id'] . '/tasks/' . $task['id'] . '/delete') ?>" onsubmit="return confirm('Delete this task?');">
+                            <?= csrf_field() ?>
+                            <button type="submit" class="p-1 text-slate-300 hover:text-rose-600 transition" title="Delete Task">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </form>
                     </div>
-                <?php endif; ?>
+                <?php endforeach; ?>
             </div>
-        </div>
+        <?php endif; ?>
     </div>
 </div>
 
 <!-- MODAL: ASSIGN PROVIDER -->
-<div class="modal fade" id="assignProviderModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <form method="post" action="<?= site_url('events/' . $event['id'] . '/providers') ?>">
-                <?= csrf_field() ?>
-                <div class="modal-header">
-                    <h5 class="modal-title fw-bold">Assign Provider to Event</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+<div id="modal-assign-provider" data-modal-backdrop class="hidden fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl text-left border border-slate-200" onclick="event.stopPropagation()">
+        <form method="post" action="<?= site_url('events/' . $event['id'] . '/providers') ?>">
+            <?= csrf_field() ?>
+            <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
+                <h3 class="text-base font-bold text-slate-900">Assign Provider to Event</h3>
+                <button type="button" onclick="closeModal('modal-assign-provider')" class="text-slate-400 hover:text-slate-600">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+
+            <div class="space-y-4 text-sm">
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                        Select Provider <span class="text-rose-500">*</span>
+                    </label>
+                    <select name="provider_id" required
+                            class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:border-indigo-500 transition">
+                        <option value="">-- Choose a Provider --</option>
+                        <?php foreach ($allProviders as $prov): ?>
+                            <option value="<?= $prov['id'] ?>">
+                                <?= esc($prov['name']) ?> (<?= esc($prov['category_name'] ?? 'General') ?>) - <?= esc($prov['price_range']) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                    <p class="text-[11px] text-slate-400 mt-1">Need a new vendor? <a href="<?= site_url('providers/new') ?>" target="_blank" class="text-indigo-600 font-semibold">Register in directory</a></p>
                 </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Select Provider <span class="text-danger">*</span></label>
-                        <select name="provider_id" class="form-select" required>
-                            <option value="">-- Choose a Provider --</option>
-                            <?php foreach ($allProviders as $prov): ?>
-                                <option value="<?= $prov['id'] ?>">
-                                    <?= esc($prov['name']) ?> (<?= esc($prov['category_name'] ?? 'General') ?>) - <?= esc($prov['price_range']) ?>
-                                </option>
-                            <?php endforeach; ?>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Service Description / Scope</label>
+                    <input type="text" name="service_description" placeholder="e.g. 5-hour DJ set & sound system"
+                           class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:border-indigo-500 transition">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Agreed Fee / Cost ($)</label>
+                        <input type="number" step="0.01" min="0" name="agreed_cost" placeholder="1500.00" value="0.00"
+                               class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:border-indigo-500 transition">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Deposit Paid ($)</label>
+                        <input type="number" step="0.01" min="0" name="deposit_paid" placeholder="500.00" value="0.00"
+                               class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:border-indigo-500 transition">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Payment Status</label>
+                        <select name="payment_status" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:border-indigo-500 transition">
+                            <option value="pending">Pending</option>
+                            <option value="partial">Partial Deposit</option>
+                            <option value="paid">Paid in Full</option>
                         </select>
-                        <div class="form-text">Don't see your provider? <a href="<?= site_url('providers/new') ?>" target="_blank">Register new provider</a></div>
                     </div>
-
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Service Description / Scope</label>
-                        <input type="text" name="service_description" class="form-control" placeholder="e.g. 5-hour DJ set & ceremony audio">
-                    </div>
-
-                    <div class="row g-2 mb-3">
-                        <div class="col-6">
-                            <label class="form-label fw-semibold">Agreed Fee / Cost ($)</label>
-                            <input type="number" step="0.01" min="0" name="agreed_cost" class="form-control" placeholder="1500.00" value="0.00">
-                        </div>
-                        <div class="col-6">
-                            <label class="form-label fw-semibold">Deposit Paid ($)</label>
-                            <input type="number" step="0.01" min="0" name="deposit_paid" class="form-control" placeholder="500.00" value="0.00">
-                        </div>
-                    </div>
-
-                    <div class="row g-2 mb-3">
-                        <div class="col-6">
-                            <label class="form-label fw-semibold">Payment Status</label>
-                            <select name="payment_status" class="form-select">
-                                <option value="pending">Pending</option>
-                                <option value="partial">Partial Deposit</option>
-                                <option value="paid">Paid in Full</option>
-                            </select>
-                        </div>
-                        <div class="col-6">
-                            <label class="form-label fw-semibold">Contract Status</label>
-                            <select name="contract_status" class="form-select">
-                                <option value="draft">Draft</option>
-                                <option value="sent">Contract Sent</option>
-                                <option value="signed">Contract Signed</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="mb-2">
-                        <label class="form-label fw-semibold">Notes / Special Requests</label>
-                        <textarea name="notes" rows="2" class="form-control" placeholder="Setup time, equipment requests, parking..."></textarea>
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Contract Status</label>
+                        <select name="contract_status" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:border-indigo-500 transition">
+                            <option value="draft">Draft</option>
+                            <option value="sent">Contract Sent</option>
+                            <option value="signed">Contract Signed</option>
+                        </select>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary fw-semibold">Assign Provider</button>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Notes / Terms</label>
+                    <textarea name="notes" rows="2" placeholder="Setup time, equipment requests, parking..."
+                              class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:border-indigo-500 transition"></textarea>
                 </div>
-            </form>
-        </div>
+            </div>
+
+            <div class="flex items-center justify-end gap-2.5 mt-6 pt-4 border-t border-slate-100">
+                <button type="button" onclick="closeModal('modal-assign-provider')"
+                        class="px-4 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition">
+                    Cancel
+                </button>
+                <button type="submit" class="px-4 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl transition">
+                    Assign Provider
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 
 <!-- MODAL: ADD TASK -->
-<div class="modal fade" id="addTaskModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <form method="post" action="<?= site_url('events/' . $event['id'] . '/tasks') ?>">
-                <?= csrf_field() ?>
-                <div class="modal-header">
-                    <h5 class="modal-title fw-bold">Add Checklist Task</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Task Title <span class="text-danger">*</span></label>
-                        <input type="text" name="title" class="form-control" placeholder="e.g. Confirm final tasting menu" required>
-                    </div>
+<div id="modal-add-task" data-modal-backdrop class="hidden fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl text-left border border-slate-200" onclick="event.stopPropagation()">
+        <form method="post" action="<?= site_url('events/' . $event['id'] . '/tasks') ?>">
+            <?= csrf_field() ?>
+            <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
+                <h3 class="text-base font-bold text-slate-900">Add Milestone Task</h3>
+                <button type="button" onclick="closeModal('modal-add-task')" class="text-slate-400 hover:text-slate-600">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
 
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Link to Provider (Optional)</label>
-                        <select name="provider_id" class="form-select">
-                            <option value="">-- No specific provider --</option>
-                            <?php foreach ($assignedProviders as $ep): ?>
-                                <option value="<?= $ep['provider_id'] ?>"><?= esc($ep['provider_name']) ?></option>
-                            <?php endforeach; ?>
+            <div class="space-y-4 text-sm">
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                        Task Title <span class="text-rose-500">*</span>
+                    </label>
+                    <input type="text" name="title" required placeholder="e.g. Confirm final tasting menu"
+                           class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:border-indigo-500 transition">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Link to Provider (Optional)</label>
+                    <select name="provider_id" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:border-indigo-500 transition">
+                        <option value="">-- No specific vendor --</option>
+                        <?php foreach ($assignedProviders as $ep): ?>
+                            <option value="<?= $ep['provider_id'] ?>"><?= esc($ep['provider_name']) ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Due Date</label>
+                        <input type="date" name="due_date" value="<?= date('Y-m-d', strtotime('+7 days')) ?>"
+                               class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:border-indigo-500 transition">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Priority</label>
+                        <select name="priority" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:border-indigo-500 transition">
+                            <option value="low">Low</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="high">High</option>
                         </select>
                     </div>
+                </div>
+            </div>
 
-                    <div class="row g-2 mb-3">
-                        <div class="col-6">
-                            <label class="form-label fw-semibold">Due Date</label>
-                            <input type="date" name="due_date" class="form-control" value="<?= date('Y-m-d', strtotime('+7 days')) ?>">
-                        </div>
-                        <div class="col-6">
-                            <label class="form-label fw-semibold">Priority</label>
-                            <select name="priority" class="form-select">
-                                <option value="low">Low</option>
-                                <option value="medium" selected>Medium</option>
-                                <option value="high">High</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary fw-semibold">Add Task</button>
-                </div>
-            </form>
-        </div>
+            <div class="flex items-center justify-end gap-2.5 mt-6 pt-4 border-t border-slate-100">
+                <button type="button" onclick="closeModal('modal-add-task')"
+                        class="px-4 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition">
+                    Cancel
+                </button>
+                <button type="submit" class="px-4 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl transition">
+                    Add Task
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 
 <!-- MODAL: DELETE EVENT -->
-<div class="modal fade" id="deleteEventModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title fw-bold text-danger">Delete Event?</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+<div id="modal-delete-event" data-modal-backdrop class="hidden fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl text-left border border-slate-200" onclick="event.stopPropagation()">
+        <div class="flex items-center justify-between mb-4">
+            <div class="w-10 h-10 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center text-lg">
+                <i class="bi bi-exclamation-triangle-fill"></i>
             </div>
-            <div class="modal-body">
-                <p>Are you sure you want to permanently delete <strong><?= esc($event['title']) ?></strong>?</p>
-                <p class="text-muted small mb-0">All associated provider assignments and checklist tasks will also be removed. This cannot be undone.</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
-                <form method="post" action="<?= site_url('events/' . $event['id'] . '/delete') ?>">
-                    <?= csrf_field() ?>
-                    <button type="submit" class="btn btn-danger">Yes, Delete Event</button>
-                </form>
-            </div>
+            <button type="button" onclick="closeModal('modal-delete-event')" class="text-slate-400 hover:text-slate-600">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+        <h3 class="text-lg font-bold text-slate-900">Delete Event?</h3>
+        <p class="text-sm text-slate-500 mt-2">
+            Are you sure you want to permanently delete <strong><?= esc($event['title']) ?></strong>? All assigned vendors and task records will also be removed.
+        </p>
+        <div class="flex items-center justify-end gap-2.5 mt-6 pt-4 border-t border-slate-100">
+            <button type="button" onclick="closeModal('modal-delete-event')"
+                    class="px-4 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition">
+                Cancel
+            </button>
+            <form method="post" action="<?= site_url('events/' . $event['id'] . '/delete') ?>">
+                <?= csrf_field() ?>
+                <button type="submit" class="px-4 py-2 text-xs font-semibold text-white bg-rose-600 hover:bg-rose-700 rounded-xl transition">
+                    Yes, Delete Event
+                </button>
+            </form>
         </div>
     </div>
 </div>

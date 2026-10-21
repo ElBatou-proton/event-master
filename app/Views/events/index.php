@@ -2,14 +2,15 @@
 
 <?= $this->section('content') ?>
 
-<!-- HEADER -->
-<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+<!-- PAGE HEADER -->
+<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
     <div>
-        <h2 class="h3 fw-bold mb-1">Events Directory</h2>
-        <p class="text-muted mb-0">Track all events, budgets, schedules, and assigned providers.</p>
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Events Directory</h1>
+        <p class="text-slate-500 text-sm mt-1">Track all events, budgets, schedules, and assigned providers.</p>
     </div>
     <div>
-        <a href="<?= site_url('events/new') ?>" class="btn btn-primary d-inline-flex align-items-center gap-1 shadow-sm">
+        <a href="<?= site_url('events/new') ?>"
+           class="inline-flex items-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-xl shadow-xs transition">
             <i class="bi bi-calendar-plus"></i>
             <span>Create New Event</span>
         </a>
@@ -17,19 +18,23 @@
 </div>
 
 <!-- FILTERS CARD -->
-<div class="card mb-4 p-3 bg-white">
-    <form method="get" action="<?= site_url('events') ?>" class="row g-2 align-items-center">
+<div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-2xs mb-6">
+    <form method="get" action="<?= site_url('events') ?>" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3 items-center">
         <!-- Search -->
-        <div class="col-md-4">
-            <div class="input-group">
-                <span class="input-group-text bg-light border-end-0"><i class="bi bi-search text-muted"></i></span>
-                <input type="text" name="search" class="form-control border-start-0 ps-0" placeholder="Search event, client, venue..." value="<?= esc($search ?? '') ?>">
-            </div>
+        <div class="lg:col-span-5 relative">
+            <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                <i class="bi bi-search"></i>
+            </span>
+            <input type="text" name="search"
+                   class="block w-full pl-9 pr-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition"
+                   placeholder="Search title, client, venue..."
+                   value="<?= esc($search ?? '') ?>">
         </div>
 
         <!-- Status Filter -->
-        <div class="col-sm-6 col-md-3">
-            <select name="status" class="form-select" onchange="this.form.submit()">
+        <div class="lg:col-span-3">
+            <select name="status" onchange="this.form.submit()"
+                    class="block w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition">
                 <option value="">All Statuses</option>
                 <option value="planning" <?= ($status ?? '') === 'planning' ? 'selected' : '' ?>>Planning</option>
                 <option value="confirmed" <?= ($status ?? '') === 'confirmed' ? 'selected' : '' ?>>Confirmed</option>
@@ -41,9 +46,10 @@
         </div>
 
         <!-- Type Filter -->
-        <div class="col-sm-6 col-md-3">
-            <select name="type" class="form-select" onchange="this.form.submit()">
-                <option value="">All Event Types</option>
+        <div class="lg:col-span-2">
+            <select name="type" onchange="this.form.submit()"
+                    class="block w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition">
+                <option value="">All Types</option>
                 <option value="wedding" <?= ($type ?? '') === 'wedding' ? 'selected' : '' ?>>Wedding</option>
                 <option value="corporate" <?= ($type ?? '') === 'corporate' ? 'selected' : '' ?>>Corporate</option>
                 <option value="birthday" <?= ($type ?? '') === 'birthday' ? 'selected' : '' ?>>Birthday</option>
@@ -56,147 +62,164 @@
         </div>
 
         <!-- Buttons -->
-        <div class="col-md-2 d-flex gap-2">
-            <button type="submit" class="btn btn-primary w-100">Filter</button>
+        <div class="lg:col-span-2 flex items-center gap-2">
+            <button type="submit" class="w-full px-3.5 py-2 text-sm font-semibold bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-2xs transition">
+                Filter
+            </button>
             <?php if (!empty($search) || !empty($status) || !empty($type)): ?>
-                <a href="<?= site_url('events') ?>" class="btn btn-outline-secondary" title="Clear Filters"><i class="bi bi-x-lg"></i></a>
+                <a href="<?= site_url('events') ?>" class="p-2 text-slate-500 hover:text-slate-800 bg-slate-100 rounded-xl transition" title="Clear Filters">
+                    <i class="bi bi-x-lg"></i>
+                </a>
             <?php endif; ?>
         </div>
     </form>
 </div>
 
 <!-- EVENTS TABLE / LIST -->
-<div class="card shadow-sm">
-    <div class="card-body p-0">
-        <?php if (empty($events)): ?>
-            <div class="text-center py-5 text-muted">
-                <i class="bi bi-calendar-x fs-1 d-block mb-2"></i>
-                <h5 class="fw-semibold">No events found</h5>
-                <p class="text-muted mb-3">Try adjusting your filters or create a new event.</p>
-                <a href="<?= site_url('events/new') ?>" class="btn btn-primary">Create Event</a>
-            </div>
-        <?php else: ?>
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th style="min-width: 240px;">Event & Client</th>
-                            <th>Date & Schedule</th>
-                            <th>Location / Venue</th>
-                            <th>Status</th>
-                            <th style="min-width: 180px;">Budget & Spend</th>
-                            <th>Vendors</th>
-                            <th class="text-end" style="min-width: 120px;">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($events as $evt): ?>
-                            <?php
-                                $percentUsed = $evt['budget'] > 0 ? round(($evt['total_provider_cost'] / $evt['budget']) * 100) : 0;
-                                $isOverBudget = $evt['total_provider_cost'] > $evt['budget'] && $evt['budget'] > 0;
-                                $barClass = $isOverBudget ? 'bg-danger' : ($percentUsed > 80 ? 'bg-warning' : 'bg-primary');
-                            ?>
-                            <tr>
-                                <td>
-                                    <div class="d-flex align-items-center gap-2">
-                                        <div>
-                                            <a href="<?= site_url('events/' . $evt['id']) ?>" class="fw-bold text-dark text-decoration-none fs-6">
-                                                <?= esc($evt['title']) ?>
-                                            </a>
-                                            <div class="small text-muted d-flex align-items-center gap-2 mt-1">
-                                                <span><i class="bi bi-person me-1"></i><?= esc($evt['client_name']) ?></span>
-                                                <span class="badge bg-light text-secondary border text-capitalize"><?= esc($evt['event_type']) ?></span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="fw-semibold text-dark">
-                                        <?= date('M j, Y', strtotime($evt['event_date'])) ?>
-                                    </div>
-                                    <div class="small text-muted">
-                                        <?php if ($evt['start_time']): ?>
-                                            <i class="bi bi-clock me-1"></i><?= substr($evt['start_time'], 0, 5) ?>
-                                            <?php if ($evt['end_time']): ?> - <?= substr($evt['end_time'], 0, 5) ?><?php endif; ?>
-                                        <?php else: ?>
-                                            <span>Full Day</span>
-                                        <?php endif; ?>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="text-truncate small" style="max-width: 180px;" title="<?= esc($evt['location_venue'] ?? 'TBD') ?>">
-                                        <i class="bi bi-geo-alt text-muted me-1"></i><?= esc($evt['location_venue'] ?? 'Location TBD') ?>
-                                    </div>
-                                    <?php if ($evt['guest_count'] > 0): ?>
-                                        <div class="small text-muted">
-                                            <i class="bi bi-people me-1"></i><?= esc($evt['guest_count']) ?> guests
-                                        </div>
-                                    <?php endif; ?>
-                                </td>
-                                <td>
-                                    <span class="badge-status status-<?= esc($evt['status']) ?> text-capitalize">
-                                        <?= esc(str_replace('_', ' ', $evt['status'])) ?>
-                                    </span>
-                                </td>
-                                <td>
-                                    <div class="d-flex justify-content-between small mb-1">
-                                        <span class="text-muted">Spent: <strong class="<?= $isOverBudget ? 'text-danger' : 'text-dark' ?>">$<?= number_format($evt['total_provider_cost'], 0) ?></strong></span>
-                                        <span class="text-muted">Budget: $<?= number_format($evt['budget'], 0) ?></span>
-                                    </div>
-                                    <div class="progress" style="height: 6px;" title="<?= $percentUsed ?>% utilized">
-                                        <div class="progress-bar <?= $barClass ?>" role="progressbar" style="width: <?= min($percentUsed, 100) ?>%"></div>
-                                    </div>
-                                    <div class="small text-end mt-1 <?= $isOverBudget ? 'text-danger fw-bold' : 'text-muted' ?>">
-                                        <?= $percentUsed ?>% allocated
-                                    </div>
-                                </td>
-                                <td>
-                                    <span class="badge bg-light text-dark border">
-                                        <i class="bi bi-people-fill text-primary me-1"></i><?= esc($evt['provider_count']) ?> assigned
-                                    </span>
-                                </td>
-                                <td class="text-end">
-                                    <div class="btn-group btn-group-sm">
-                                        <a href="<?= site_url('events/' . $evt['id']) ?>" class="btn btn-outline-primary" title="View & Manage Event">
-                                            <i class="bi bi-eye"></i>
-                                        </a>
-                                        <a href="<?= site_url('events/' . $evt['id'] . '/edit') ?>" class="btn btn-outline-secondary" title="Edit Event Details">
-                                            <i class="bi bi-pencil"></i>
-                                        </a>
-                                        <button type="button" class="btn btn-outline-danger" title="Delete Event" data-bs-toggle="modal" data-bs-target="#deleteModal-<?= $evt['id'] ?>">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </div>
+<div class="bg-white rounded-2xl border border-slate-200/80 shadow-2xs overflow-hidden">
+    <?php if (empty($events)): ?>
+        <div class="text-center py-16 px-4">
+            <i class="bi bi-calendar-x text-5xl text-slate-300 block mb-3"></i>
+            <h3 class="text-base font-bold text-slate-800">No events found</h3>
+            <p class="text-sm text-slate-500 mb-4 mt-1">Try adjusting your filters or create a new event record.</p>
+            <a href="<?= site_url('events/new') ?>" class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm font-semibold rounded-xl">
+                Create Event
+            </a>
+        </div>
+    <?php else: ?>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-sm">
+                <thead class="bg-slate-50 text-slate-500 uppercase font-semibold text-[11px] tracking-wider border-b border-slate-100">
+                    <tr>
+                        <th class="px-6 py-3.5">Event & Client</th>
+                        <th class="px-4 py-3.5">Date & Schedule</th>
+                        <th class="px-4 py-3.5">Venue & Guests</th>
+                        <th class="px-4 py-3.5">Status</th>
+                        <th class="px-4 py-3.5 min-w-[200px]">Budget & Costs</th>
+                        <th class="px-4 py-3.5">Vendors</th>
+                        <th class="px-6 py-3.5 text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 text-slate-700">
+                    <?php foreach ($events as $evt): ?>
+                        <?php
+                            $percentUsed = $evt['budget'] > 0 ? round(($evt['total_provider_cost'] / $evt['budget']) * 100) : 0;
+                            $isOverBudget = $evt['total_provider_cost'] > $evt['budget'] && $evt['budget'] > 0;
+                            $barColor = $isOverBudget ? 'bg-rose-500' : ($percentUsed > 80 ? 'bg-amber-500' : 'bg-indigo-600');
 
-                                    <!-- Delete Modal -->
-                                    <div class="modal fade" id="deleteModal-<?= $evt['id'] ?>" tabindex="-1" aria-hidden="true">
-                                        <div class="modal-dialog modal-dialog-centered text-start">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title fw-bold text-danger">Delete Event?</h5>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <p>Are you sure you want to delete <strong><?= esc($evt['title']) ?></strong>?</p>
-                                                    <p class="text-muted small mb-0">This will remove all associated provider assignments and checklist tasks. This action cannot be undone.</p>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
-                                                    <form method="post" action="<?= site_url('events/' . $evt['id'] . '/delete') ?>">
-                                                        <button type="submit" class="btn btn-danger">Yes, Delete Event</button>
-                                                    </form>
-                                                </div>
+                            $statusClasses = [
+                                'planning'    => 'bg-sky-50 text-sky-700 border-sky-200',
+                                'confirmed'   => 'bg-emerald-50 text-emerald-700 border-emerald-200',
+                                'in_progress' => 'bg-amber-50 text-amber-700 border-amber-200',
+                                'completed'   => 'bg-slate-100 text-slate-700 border-slate-200',
+                                'cancelled'   => 'bg-rose-50 text-rose-700 border-rose-200',
+                                'draft'       => 'bg-gray-100 text-gray-700 border-gray-200',
+                            ];
+                            $badgeClass = $statusClasses[$evt['status']] ?? 'bg-slate-100 text-slate-700';
+                        ?>
+                        <tr class="hover:bg-slate-50/80 transition">
+                            <td class="px-6 py-4">
+                                <a href="<?= site_url('events/' . $evt['id']) ?>" class="font-bold text-slate-900 hover:text-indigo-600 transition block text-base">
+                                    <?= esc($evt['title']) ?>
+                                </a>
+                                <div class="flex items-center gap-2 mt-1 text-xs text-slate-500">
+                                    <span><i class="bi bi-person mr-1"></i><?= esc($evt['client_name']) ?></span>
+                                    <span class="inline-block px-1.5 py-0.5 rounded-sm bg-slate-100 text-slate-600 border border-slate-200 capitalize font-medium text-[10px]"><?= esc($evt['event_type']) ?></span>
+                                </div>
+                            </td>
+                            <td class="px-4 py-4 whitespace-nowrap">
+                                <div class="font-semibold text-slate-900"><?= date('M j, Y', strtotime($evt['event_date'])) ?></div>
+                                <div class="text-xs text-slate-500 mt-0.5">
+                                    <?php if ($evt['start_time']): ?>
+                                        <i class="bi bi-clock mr-1"></i><?= substr($evt['start_time'], 0, 5) ?><?= $evt['end_time'] ? ' - ' . substr($evt['end_time'], 0, 5) : '' ?>
+                                    <?php else: ?>
+                                        <span>Full Day</span>
+                                    <?php endif; ?>
+                                </div>
+                            </td>
+                            <td class="px-4 py-4">
+                                <div class="truncate max-w-[160px] text-xs text-slate-700" title="<?= esc($evt['location_venue'] ?? 'Location TBD') ?>">
+                                    <i class="bi bi-geo-alt text-slate-400 mr-1"></i><?= esc($evt['location_venue'] ?? 'Location TBD') ?>
+                                </div>
+                                <?php if ($evt['guest_count'] > 0): ?>
+                                    <div class="text-xs text-slate-400 mt-0.5">
+                                        <i class="bi bi-people mr-1"></i><?= esc($evt['guest_count']) ?> guests
+                                    </div>
+                                <?php endif; ?>
+                            </td>
+                            <td class="px-4 py-4 whitespace-nowrap">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border <?= $badgeClass ?> capitalize">
+                                    <?= esc(str_replace('_', ' ', $evt['status'])) ?>
+                                </span>
+                            </td>
+                            <td class="px-4 py-4">
+                                <div class="flex items-center justify-between text-xs mb-1">
+                                    <span class="text-slate-500">Spent: <strong class="<?= $isOverBudget ? 'text-rose-600' : 'text-slate-800' ?>">$<?= number_format($evt['total_provider_cost'], 0) ?></strong></span>
+                                    <span class="text-slate-400">Budget: $<?= number_format($evt['budget'], 0) ?></span>
+                                </div>
+                                <div class="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
+                                    <div class="<?= $barColor ?> h-1.5 rounded-full transition-all" style="width: <?= min($percentUsed, 100) ?>%"></div>
+                                </div>
+                                <div class="text-right text-[11px] mt-0.5 <?= $isOverBudget ? 'text-rose-600 font-bold' : 'text-slate-400' ?>">
+                                    <?= $percentUsed ?>% allocated
+                                </div>
+                            </td>
+                            <td class="px-4 py-4 whitespace-nowrap">
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 border border-slate-200 text-xs font-semibold">
+                                    <i class="bi bi-people-fill text-indigo-600"></i><?= esc($evt['provider_count']) ?> hired
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 text-right whitespace-nowrap">
+                                <div class="inline-flex items-center gap-1.5">
+                                    <a href="<?= site_url('events/' . $evt['id']) ?>"
+                                       class="p-1.5 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition" title="View & Manage">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a href="<?= site_url('events/' . $evt['id'] . '/edit') ?>"
+                                       class="p-1.5 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition" title="Edit">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <button type="button" onclick="openModal('delete-modal-<?= $evt['id'] ?>')"
+                                            class="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition" title="Delete">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+
+                                <!-- DELETE MODAL -->
+                                <div id="delete-modal-<?= $evt['id'] ?>" data-modal-backdrop class="hidden fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
+                                    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl text-left border border-slate-200" onclick="event.stopPropagation()">
+                                        <div class="flex items-center justify-between mb-4">
+                                            <div class="w-10 h-10 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center text-lg">
+                                                <i class="bi bi-exclamation-triangle-fill"></i>
                                             </div>
+                                            <button type="button" onclick="closeModal('delete-modal-<?= $evt['id'] ?>')" class="text-slate-400 hover:text-slate-600">
+                                                <i class="bi bi-x-lg"></i>
+                                            </button>
+                                        </div>
+                                        <h3 class="text-lg font-bold text-slate-900">Delete Event?</h3>
+                                        <p class="text-sm text-slate-500 mt-2">
+                                            Are you sure you want to permanently delete <strong><?= esc($evt['title']) ?></strong>? All provider assignments and task records will be wiped.
+                                        </p>
+                                        <div class="flex items-center justify-end gap-2.5 mt-6 pt-4 border-t border-slate-100">
+                                            <button type="button" onclick="closeModal('delete-modal-<?= $evt['id'] ?>')"
+                                                    class="px-4 py-2 text-sm font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition">
+                                                Cancel
+                                            </button>
+                                            <form method="post" action="<?= site_url('events/' . $evt['id'] . '/delete') ?>">
+                                                <button type="submit" class="px-4 py-2 text-sm font-semibold text-white bg-rose-600 hover:bg-rose-700 rounded-xl transition">
+                                                    Yes, Delete Event
+                                                </button>
+                                            </form>
                                         </div>
                                     </div>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            </div>
-        <?php endif; ?>
-    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+    <?php endif; ?>
 </div>
 
 <?= $this->endSection() ?>

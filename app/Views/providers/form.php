@@ -7,41 +7,51 @@
     $actionUrl = $isEdit ? site_url('providers/' . $provider['id']) : site_url('providers');
 ?>
 
-<div class="row justify-content-center">
-    <div class="col-lg-9">
-        <!-- BREADCRUMB -->
-        <nav aria-label="breadcrumb" class="mb-3">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="<?= site_url('providers') ?>">Providers</a></li>
-                <li class="breadcrumb-item active" aria-current="page"><?= $isEdit ? 'Edit Provider' : 'Register Provider' ?></li>
-            </ol>
-        </nav>
+<div class="max-w-4xl mx-auto">
+    <!-- BREADCRUMB -->
+    <nav class="flex mb-4 text-xs font-semibold text-slate-500 gap-2">
+        <a href="<?= site_url('providers') ?>" class="hover:text-indigo-600">Providers</a>
+        <span>/</span>
+        <span class="text-slate-800"><?= $isEdit ? 'Edit Provider' : 'Register Provider' ?></span>
+    </nav>
 
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="h3 fw-bold mb-0"><?= esc($title) ?></h2>
-            <a href="<?= $isEdit ? site_url('providers/' . $provider['id']) : site_url('providers') ?>" class="btn btn-outline-secondary">
-                <i class="bi bi-arrow-left me-1"></i> Cancel
-            </a>
+    <div class="flex items-center justify-between mb-6">
+        <div>
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight"><?= esc($title) ?></h1>
+            <p class="text-slate-500 text-sm mt-1">Configure vendor services, category specialty, pricing tier, and contact information.</p>
         </div>
+        <a href="<?= $isEdit ? site_url('providers/' . $provider['id']) : site_url('providers') ?>"
+           class="inline-flex items-center gap-1.5 px-3.5 py-2 text-sm font-semibold text-slate-700 bg-white border border-slate-300 rounded-xl hover:bg-slate-50 shadow-2xs transition">
+            <i class="bi bi-arrow-left"></i> Cancel
+        </a>
+    </div>
 
-        <form method="post" action="<?= $actionUrl ?>" class="card shadow-sm p-4">
-            <?= csrf_field() ?>
+    <form method="post" action="<?= $actionUrl ?>" class="bg-white rounded-2xl border border-slate-200/80 shadow-2xs p-6 sm:p-8 space-y-8">
+        <?= csrf_field() ?>
 
-            <!-- CATEGORY & NAME -->
-            <h5 class="fw-bold text-dark border-bottom pb-2 mb-3">
-                <i class="bi bi-shop text-primary me-2"></i>Provider Profile
-            </h5>
+        <!-- SECTION 1: BASIC PROFILE -->
+        <div>
+            <h3 class="text-base font-bold text-slate-900 flex items-center gap-2 pb-3 border-b border-slate-100">
+                <i class="bi bi-shop text-indigo-600"></i> Vendor Information
+            </h3>
 
-            <div class="row g-3 mb-4">
-                <div class="col-md-7">
-                    <label class="form-label fw-semibold">Company / Provider Name <span class="text-danger">*</span></label>
-                    <input type="text" name="name" class="form-control" placeholder="e.g. Gourmet Haven Catering" required
-                           value="<?= old('name', $provider['name'] ?? '') ?>">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-5 mt-5">
+                <div class="lg:col-span-7">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                        Company / Provider Name <span class="text-rose-500">*</span>
+                    </label>
+                    <input type="text" name="name" required
+                           placeholder="e.g. Gourmet Haven Catering"
+                           value="<?= old('name', $provider['name'] ?? '') ?>"
+                           class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition">
                 </div>
 
-                <div class="col-md-5">
-                    <label class="form-label fw-semibold">Service Category</label>
-                    <select name="category_id" class="form-select">
+                <div class="lg:col-span-5">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                        Service Category
+                    </label>
+                    <select name="category_id"
+                            class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition">
                         <option value="">-- Select Category --</option>
                         <?php $selectedCat = old('category_id', $provider['category_id'] ?? ''); ?>
                         <?php foreach ($categories as $cat): ?>
@@ -52,9 +62,12 @@
                     </select>
                 </div>
 
-                <div class="col-md-4">
-                    <label class="form-label fw-semibold">Price Range</label>
-                    <select name="price_range" class="form-select">
+                <div class="lg:col-span-4">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                        Price Range
+                    </label>
+                    <select name="price_range"
+                            class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition">
                         <?php
                             $ranges = [
                                 '$'    => '$ (Budget Friendly)',
@@ -70,9 +83,12 @@
                     </select>
                 </div>
 
-                <div class="col-md-4">
-                    <label class="form-label fw-semibold">Rating</label>
-                    <select name="rating" class="form-select">
+                <div class="lg:col-span-4">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                        Vendor Rating
+                    </label>
+                    <select name="rating"
+                            class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition">
                         <?php $selectedRating = (int) old('rating', $provider['rating'] ?? 5); ?>
                         <option value="5" <?= $selectedRating === 5 ? 'selected' : '' ?>>★★★★★ (5 Stars - Top Tier)</option>
                         <option value="4" <?= $selectedRating === 4 ? 'selected' : '' ?>>★★★★☆ (4 Stars - Great)</option>
@@ -82,12 +98,15 @@
                     </select>
                 </div>
 
-                <div class="col-md-4">
-                    <label class="form-label fw-semibold">Status</label>
-                    <select name="status" class="form-select">
+                <div class="lg:col-span-4">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                        Status
+                    </label>
+                    <select name="status"
+                            class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition">
                         <?php
                             $statuses = [
-                                'preferred' => 'Preferred Vendor (Recommended)',
+                                'preferred' => 'Preferred Vendor',
                                 'active'    => 'Active',
                                 'inactive'  => 'Inactive / Unavailable',
                             ];
@@ -99,84 +118,105 @@
                     </select>
                 </div>
             </div>
+        </div>
 
-            <!-- CONTACT DETAILS -->
-            <h5 class="fw-bold text-dark border-bottom pb-2 mb-3">
-                <i class="bi bi-person-lines-fill text-primary me-2"></i>Contact Information
-            </h5>
+        <!-- SECTION 2: CONTACT INFORMATION -->
+        <div>
+            <h3 class="text-base font-bold text-slate-900 flex items-center gap-2 pb-3 border-b border-slate-100">
+                <i class="bi bi-person-lines-fill text-indigo-600"></i> Contact Information
+            </h3>
 
-            <div class="row g-3 mb-4">
-                <div class="col-md-6">
-                    <label class="form-label fw-semibold">Primary Contact Person</label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-person"></i></span>
-                        <input type="text" name="contact_person" class="form-control" placeholder="e.g. Alex Morales"
-                               value="<?= old('contact_person', $provider['contact_person'] ?? '') ?>">
-                    </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-5 mt-5">
+                <div class="lg:col-span-6">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                        Primary Contact Person
+                    </label>
+                    <input type="text" name="contact_person"
+                           placeholder="e.g. Chef Marcus Rivera"
+                           value="<?= old('contact_person', $provider['contact_person'] ?? '') ?>"
+                           class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition">
                 </div>
 
-                <div class="col-md-6">
-                    <label class="form-label fw-semibold">Email Address</label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-envelope"></i></span>
-                        <input type="email" name="email" class="form-control" placeholder="booking@provider.com"
-                               value="<?= old('email', $provider['email'] ?? '') ?>">
-                    </div>
+                <div class="lg:col-span-6">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                        Email Address
+                    </label>
+                    <input type="email" name="email"
+                           placeholder="booking@provider.com"
+                           value="<?= old('email', $provider['email'] ?? '') ?>"
+                           class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition">
                 </div>
 
-                <div class="col-md-6">
-                    <label class="form-label fw-semibold">Phone Number</label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-telephone"></i></span>
-                        <input type="text" name="phone" class="form-control" placeholder="+1 (555) 123-4567"
-                               value="<?= old('phone', $provider['phone'] ?? '') ?>">
-                    </div>
+                <div class="lg:col-span-6">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                        Phone Number
+                    </label>
+                    <input type="text" name="phone"
+                           placeholder="+1 (555) 123-4567"
+                           value="<?= old('phone', $provider['phone'] ?? '') ?>"
+                           class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition">
                 </div>
 
-                <div class="col-md-6">
-                    <label class="form-label fw-semibold">Website or Social Profile</label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-globe"></i></span>
-                        <input type="url" name="website" class="form-control" placeholder="https://provider.com"
-                               value="<?= old('website', $provider['website'] ?? '') ?>">
-                    </div>
+                <div class="lg:col-span-6">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                        Website or Social Page
+                    </label>
+                    <input type="url" name="website"
+                           placeholder="https://provider.com"
+                           value="<?= old('website', $provider['website'] ?? '') ?>"
+                           class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition">
                 </div>
 
-                <div class="col-md-8">
-                    <label class="form-label fw-semibold">Street Address / Base Location</label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
-                        <input type="text" name="address" class="form-control" placeholder="123 Music Ave, Suite 4B"
-                               value="<?= old('address', $provider['address'] ?? '') ?>">
-                    </div>
+                <div class="lg:col-span-8">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                        Street Address / Base Headquarters
+                    </label>
+                    <input type="text" name="address"
+                           placeholder="742 Evergreen Terrace, Suite 100"
+                           value="<?= old('address', $provider['address'] ?? '') ?>"
+                           class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition">
                 </div>
 
-                <div class="col-md-4">
-                    <label class="form-label fw-semibold">City / Region</label>
-                    <input type="text" name="city" class="form-control" placeholder="Springfield"
-                           value="<?= old('city', $provider['city'] ?? '') ?>">
+                <div class="lg:col-span-4">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                        City / Service Area
+                    </label>
+                    <input type="text" name="city"
+                           placeholder="Springfield"
+                           value="<?= old('city', $provider['city'] ?? '') ?>"
+                           class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition">
                 </div>
             </div>
+        </div>
 
-            <!-- NOTES -->
-            <h5 class="fw-bold text-dark border-bottom pb-2 mb-3">
-                <i class="bi bi-file-text text-primary me-2"></i>Service Notes & Specialties
-            </h5>
+        <!-- SECTION 3: NOTES & SPECIALTIES -->
+        <div>
+            <h3 class="text-base font-bold text-slate-900 flex items-center gap-2 pb-3 border-b border-slate-100">
+                <i class="bi bi-file-text text-indigo-600"></i> Service Capabilities & Specialties
+            </h3>
 
-            <div class="mb-4">
-                <label class="form-label fw-semibold">Notes, Specialties & Equipment Details</label>
-                <textarea name="notes" rows="3" class="form-control" placeholder="Include dietary capability, DJ genres, sound equipment provided, cancellation terms, etc."><?= old('notes', $provider['notes'] ?? '') ?></textarea>
+            <div class="mt-5">
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                    Specialties, Dietary options, DJ genres, Sound gear details
+                </label>
+                <textarea name="notes" rows="4"
+                          placeholder="Include dietary capability (vegan, halal, kosher), DJ equipment, venue load-in specs, cancellation policies..."
+                          class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition"><?= old('notes', $provider['notes'] ?? '') ?></textarea>
             </div>
+        </div>
 
-            <!-- SUBMIT -->
-            <div class="d-flex justify-content-end gap-2 border-top pt-3">
-                <a href="<?= $isEdit ? site_url('providers/' . $provider['id']) : site_url('providers') ?>" class="btn btn-light border">Cancel</a>
-                <button type="submit" class="btn btn-primary px-4 fw-semibold">
-                    <i class="bi bi-check2 me-1"></i> <?= $isEdit ? 'Save Changes' : 'Register Provider' ?>
-                </button>
-            </div>
-        </form>
-    </div>
+        <!-- ACTIONS -->
+        <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
+            <a href="<?= $isEdit ? site_url('providers/' . $provider['id']) : site_url('providers') ?>"
+               class="px-5 py-2.5 text-sm font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition">
+                Cancel
+            </a>
+            <button type="submit"
+                    class="px-6 py-2.5 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-xs transition">
+                <i class="bi bi-check2 mr-1"></i> <?= $isEdit ? 'Save Changes' : 'Register Provider' ?>
+            </button>
+        </div>
+    </form>
 </div>
 
 <?= $this->endSection() ?>
