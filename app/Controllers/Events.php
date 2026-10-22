@@ -102,6 +102,29 @@ class Events extends BaseController
         ]);
     }
 
+    public function export(int $id)
+    {
+        $event = $this->eventModel->getEventWithStats($id);
+        if (!$event) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound("Event #{$id} not found.");
+        }
+
+        $assignedProviders = $this->eventProviderModel->getByEvent($id);
+        $tasks             = $this->taskModel->getByEvent($id);
+
+        $exporter  = new \App\Services\EventExcelExporter();
+        $excelData = $exporter->generate($event, $assignedProviders, $tasks);
+
+        $safeTitle = preg_replace('/[^a-zA-Z0-9_-]/', '_', $event['title']);
+        $filename  = "Event_{$event['id']}_{$safeTitle}_" . date('Ymd') . '.xlsx';
+
+        return $this->response
+            ->setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+            ->setHeader('Content-Disposition', 'attachment; filename="' . $filename . '"')
+            ->setHeader('Cache-Control', 'max-age=0')
+            ->setBody($excelData);
+    }
+
     public function edit(int $id): string
     {
         $event = $this->eventModel->find($id);

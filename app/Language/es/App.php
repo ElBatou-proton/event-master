@@ -145,6 +145,19 @@ return [
     'delete_task_confirm'        => '¿Eliminar esta tarea?',
     'remove_provider_confirm'    => '¿Quitar la asignación de este proveedor del evento?',
 
+    // Export Excel
+    'export_excel'               => 'Exportar a Excel',
+    'export_sheet_overview'      => 'Resumen',
+    'export_sheet_providers'     => 'Proveedores',
+    'export_sheet_tasks'         => 'Checklist y Tareas',
+    'export_event_summary'       => 'Resumen de Planificación del Evento',
+    'export_basic_info'          => 'Información Básica',
+    'export_client_info'         => 'Datos del Cliente',
+    'export_financial_summary'   => 'Resumen Financiero',
+    'export_tasks_summary'       => 'Progreso del Checklist',
+    'export_notes_description'   => 'Alcance y Notas',
+    'export_total'               => 'Total',
+
     // Event Modals
     'modal_assign_title'         => 'Asignar Proveedor al Evento',
     'modal_edit_assign_title'    => 'Editar Asignación de Proveedor',

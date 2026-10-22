@@ -180,6 +180,10 @@
                             </td>
                             <td class="px-6 py-4 text-right whitespace-nowrap">
                                 <div class="inline-flex items-center gap-1.5">
+                                    <a href="<?= site_url('events/' . $evt['id'] . '/export') ?>"
+                                       class="p-1.5 text-slate-500 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition" title="<?= lang('App.export_excel') ?>">
+                                        <i class="bi bi-file-earmark-excel"></i>
+                                    </a>
                                     <a href="<?= site_url('events/' . $evt['id']) ?>"
                                        class="p-1.5 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition" title="<?= lang('App.view_details') ?>">
                                         <i class="bi bi-eye"></i>

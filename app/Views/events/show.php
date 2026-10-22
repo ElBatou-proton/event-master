@@ -10,6 +10,11 @@
         <span class="text-slate-800 truncate max-w-[200px] sm:max-w-none"><?= esc($event['title']) ?></span>
     </nav>
     <div class="flex items-center gap-2">
+        <a href="<?= site_url('events/' . $event['id'] . '/export') ?>"
+           class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg hover:bg-emerald-100 shadow-2xs transition"
+           title="<?= lang('App.export_excel') ?>">
+            <i class="bi bi-file-earmark-excel"></i> <?= lang('App.export_excel') ?>
+        </a>
         <a href="<?= site_url('events/' . $event['id'] . '/edit') ?>"
            class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 shadow-2xs transition">
             <i class="bi bi-pencil"></i> <?= lang('App.edit') ?>

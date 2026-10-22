@@ -145,6 +145,19 @@ return [
     'delete_task_confirm'        => 'Delete this task?',
     'remove_provider_confirm'    => 'Remove this provider assignment from the event?',
 
+    // Export Excel
+    'export_excel'               => 'Export to Excel',
+    'export_sheet_overview'      => 'Overview',
+    'export_sheet_providers'     => 'Vendors & Providers',
+    'export_sheet_tasks'         => 'Checklist & Tasks',
+    'export_event_summary'       => 'Event Planning Summary',
+    'export_basic_info'          => 'Basic Information',
+    'export_client_info'         => 'Client Details',
+    'export_financial_summary'   => 'Financial Summary',
+    'export_tasks_summary'       => 'Checklist Progress',
+    'export_notes_description'   => 'Scope & Notes',
+    'export_total'               => 'Total',
+
     // Event Modals
     'modal_assign_title'         => 'Assign Provider to Event',
     'modal_edit_assign_title'    => 'Edit Provider Assignment',

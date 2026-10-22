@@ -17,6 +17,7 @@ $routes->group('events', static function ($routes) {
     $routes->post('/', 'Events::create');
     $routes->get('(:num)', 'Events::show/$1');
     $routes->get('(:num)/edit', 'Events::edit/$1');
+    $routes->get('(:num)/export', 'Events::export/$1');
     $routes->post('(:num)', 'Events::update/$1');
     $routes->post('(:num)/delete', 'Events::delete/$1');
 
