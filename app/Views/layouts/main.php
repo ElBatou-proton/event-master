@@ -247,9 +247,17 @@
                     'X-Requested-With': 'XMLHttpRequest'
                 }
             })
-            .then(res => res.json())
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error('Network error');
+                }
+                return res.json();
+            })
             .then(data => {
                 if (data.status === 'success') {
+                    if (checkboxEl) {
+                        checkboxEl.checked = (data.newStatus === 'completed');
+                    }
                     const label = document.getElementById('task-label-' + taskId);
                     if (label) {
                         if (data.newStatus === 'completed') {
@@ -260,9 +268,39 @@
                             label.classList.add('text-slate-800');
                         }
                     }
+
+                    // Update Checklist & Milestone Tasks counter badge
+                    const counterBadge = document.getElementById('task-counter-badge');
+                    if (counterBadge && data.totalTasks !== undefined && data.completedTasks !== undefined) {
+                        counterBadge.textContent = `${data.completedTasks} / ${data.totalTasks} Done (${data.taskPercentage}%)`;
+                    }
+
+                    // Update Checklist & Milestone Tasks progress bar
+                    const progressBar = document.getElementById('task-progress-bar');
+                    if (progressBar && data.taskPercentage !== undefined) {
+                        progressBar.style.width = data.taskPercentage + '%';
+                    }
+
+                    // Update Dashboard pending tasks counter if present
+                    const pendingCounter = document.getElementById('dashboard-pending-counter');
+                    const pendingList = document.getElementById('pending-tasks-list');
+                    if (pendingCounter && pendingList) {
+                        const remaining = pendingList.querySelectorAll('input[type="checkbox"]:not(:checked)').length;
+                        pendingCounter.textContent = `${remaining} pending`;
+                    }
+                } else {
+                    if (checkboxEl) {
+                        checkboxEl.checked = !checkboxEl.checked;
+                    }
+                    console.error('Task toggle failed:', data.message);
                 }
             })
-            .catch(err => console.error('Task toggle error:', err));
+            .catch(err => {
+                if (checkboxEl) {
+                    checkboxEl.checked = !checkboxEl.checked;
+                }
+                console.error('Task toggle error:', err);
+            });
         }
     </script>
 </body>

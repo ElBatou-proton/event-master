@@ -265,9 +265,18 @@ class Events extends BaseController
         $this->taskModel->update($taskId, ['status' => $newStatus]);
 
         if ($this->request->isAJAX()) {
+            $eventId = (int) $task['event_id'];
+            $totalTasks = $this->taskModel->where('event_id', $eventId)->countAllResults();
+            $completedTasks = $this->taskModel->where('event_id', $eventId)->where('status', 'completed')->countAllResults();
+            $taskPercentage = $totalTasks > 0 ? (int) round(($completedTasks / $totalTasks) * 100) : 0;
+
             return $this->response->setJSON([
-                'status'    => 'success',
-                'newStatus' => $newStatus,
+                'status'         => 'success',
+                'newStatus'      => $newStatus,
+                'eventId'        => $eventId,
+                'completedTasks' => $completedTasks,
+                'totalTasks'     => $totalTasks,
+                'taskPercentage' => $taskPercentage,
             ]);
         }
 

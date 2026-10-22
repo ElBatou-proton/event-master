@@ -199,7 +199,7 @@
                     <i class="bi bi-check2-square text-emerald-600 text-lg"></i>
                     <h2 class="text-base font-bold text-slate-900">Pending Tasks</h2>
                 </div>
-                <span class="px-2 py-0.5 text-xs font-bold rounded-full bg-slate-100 text-slate-600">
+                <span id="dashboard-pending-counter" class="px-2 py-0.5 text-xs font-bold rounded-full bg-slate-100 text-slate-600">
                     <?= count($pendingTasks) ?> pending
                 </span>
             </div>
@@ -211,7 +211,7 @@
                         <p class="text-sm font-medium text-slate-600">All checklist milestones are complete!</p>
                     </div>
                 <?php else: ?>
-                    <ul class="divide-y divide-slate-100 space-y-3">
+                    <ul id="pending-tasks-list" class="divide-y divide-slate-100 space-y-3">
                         <?php foreach ($pendingTasks as $task): ?>
                             <li class="pt-3 first:pt-0">
                                 <div class="flex items-start gap-3">

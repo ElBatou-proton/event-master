@@ -411,7 +411,7 @@
             <div class="flex items-center gap-2">
                 <i class="bi bi-check2-circle text-emerald-600 text-lg"></i>
                 <h2 class="text-base font-bold text-slate-900">Checklist & Milestone Tasks</h2>
-                <span class="px-2.5 py-0.5 text-xs font-bold rounded-full bg-emerald-50 text-emerald-700">
+                <span id="task-counter-badge" class="px-2.5 py-0.5 text-xs font-bold rounded-full bg-emerald-50 text-emerald-700">
                     <?= $event['completed_tasks'] ?> / <?= $event['total_tasks'] ?> Done (<?= $event['task_percentage'] ?>%)
                 </span>
             </div>
@@ -423,7 +423,7 @@
 
         <?php if ($event['total_tasks'] > 0): ?>
             <div class="w-full bg-slate-100 rounded-full h-1.5 mb-5 overflow-hidden">
-                <div class="bg-emerald-500 h-1.5 rounded-full transition-all" style="width: <?= $event['task_percentage'] ?>%"></div>
+                <div id="task-progress-bar" class="bg-emerald-500 h-1.5 rounded-full transition-all" style="width: <?= $event['task_percentage'] ?>%"></div>
             </div>
         <?php endif; ?>
 
