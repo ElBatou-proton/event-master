@@ -26,7 +26,7 @@ class Providers extends BaseController
         $categories = $this->categoryModel->orderBy('name', 'ASC')->findAll();
 
         return view('providers/index', [
-            'title'      => 'Service Providers Directory',
+            'title'      => lang('App.provider_directory'),
             'providers'  => $providers,
             'categories' => $categories,
             'categoryId' => $categoryId,
@@ -40,7 +40,7 @@ class Providers extends BaseController
         $categories = $this->categoryModel->orderBy('name', 'ASC')->findAll();
 
         return view('providers/form', [
-            'title'      => 'Register New Provider',
+            'title'      => lang('App.create_new_provider'),
             'provider'   => null,
             'categories' => $categories,
         ]);
@@ -72,7 +72,7 @@ class Providers extends BaseController
         $id = $this->providerModel->getInsertID();
 
         return redirect()->to(site_url("providers/{$id}"))
-                         ->with('success', 'Provider profile registered successfully.');
+                         ->with('success', lang('App.flash_provider_created'));
     }
 
     public function show(int $id): string
@@ -101,7 +101,7 @@ class Providers extends BaseController
         $categories = $this->categoryModel->orderBy('name', 'ASC')->findAll();
 
         return view('providers/form', [
-            'title'      => 'Edit Provider: ' . $provider['name'],
+            'title'      => lang('App.edit_provider') . ': ' . $provider['name'],
             'provider'   => $provider,
             'categories' => $categories,
         ]);
@@ -137,7 +137,7 @@ class Providers extends BaseController
         }
 
         return redirect()->to(site_url("providers/{$id}"))
-                         ->with('success', 'Provider profile updated successfully.');
+                         ->with('success', lang('App.flash_provider_updated'));
     }
 
     public function delete(int $id)
@@ -150,6 +150,6 @@ class Providers extends BaseController
         $this->providerModel->delete($id);
 
         return redirect()->to(site_url('providers'))
-                         ->with('success', "Provider '{$provider['name']}' removed.");
+                         ->with('success', lang('App.flash_provider_deleted'));
     }
 }

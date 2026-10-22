@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full bg-slate-50">
+<html lang="<?= service('request')->getLocale() ?>" class="h-full bg-slate-50">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= esc($title ?? 'Event Planner') ?> | CodeIgniter 4</title>
+    <title><?= esc($title ?? lang('App.brand_name')) ?> | CodeIgniter 4</title>
 
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -66,34 +66,58 @@
                     <nav class="hidden md:flex items-center space-x-1">
                         <a href="<?= site_url('/') ?>"
                            class="px-3 py-2 rounded-lg text-sm font-semibold transition <?= uri_string() === '' ? 'text-indigo-600 bg-indigo-50' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' ?>">
-                            <i class="bi bi-speedometer2 mr-1.5"></i>Dashboard
+                            <i class="bi bi-speedometer2 mr-1.5"></i><?= lang('App.nav_dashboard') ?>
                         </a>
                         <a href="<?= site_url('events') ?>"
                            class="px-3 py-2 rounded-lg text-sm font-semibold transition <?= str_starts_with(uri_string(), 'events') ? 'text-indigo-600 bg-indigo-50' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' ?>">
-                            <i class="bi bi-calendar-check mr-1.5"></i>Events
+                            <i class="bi bi-calendar-check mr-1.5"></i><?= lang('App.nav_events') ?>
                         </a>
                         <a href="<?= site_url('providers') ?>"
                            class="px-3 py-2 rounded-lg text-sm font-semibold transition <?= str_starts_with(uri_string(), 'providers') ? 'text-indigo-600 bg-indigo-50' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' ?>">
-                            <i class="bi bi-people mr-1.5"></i>Providers
+                            <i class="bi bi-people mr-1.5"></i><?= lang('App.nav_providers') ?>
                         </a>
                         <a href="<?= site_url('categories') ?>"
                            class="px-3 py-2 rounded-lg text-sm font-semibold transition <?= str_starts_with(uri_string(), 'categories') ? 'text-indigo-600 bg-indigo-50' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' ?>">
-                            <i class="bi bi-grid mr-1.5"></i>Categories
+                            <i class="bi bi-grid mr-1.5"></i><?= lang('App.nav_categories') ?>
                         </a>
                     </nav>
                 </div>
 
                 <!-- RIGHT ACTION BUTTONS -->
                 <div class="hidden md:flex items-center gap-2.5">
+                    <!-- LANGUAGE SELECTOR -->
+                    <?php $currentLocale = service('request')->getLocale(); ?>
+                    <div class="relative inline-block text-left" id="lang-menu-container">
+                        <button type="button" onclick="toggleLangMenu()"
+                                class="inline-flex items-center gap-1.5 px-2.5 py-2 text-xs font-semibold text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 shadow-2xs transition"
+                                title="<?= lang('App.language') ?>">
+                            <i class="bi bi-translate text-indigo-600"></i>
+                            <span><?= $currentLocale === 'es' ? 'ES' : 'EN' ?></span>
+                            <i class="bi bi-chevron-down text-[10px] text-slate-400"></i>
+                        </button>
+                        <div id="lang-dropdown" class="hidden absolute right-0 mt-2 w-36 rounded-xl bg-white shadow-lg border border-slate-100 py-1 z-50">
+                            <a href="<?= site_url('lang/en') ?>"
+                               class="flex items-center justify-between px-3 py-1.5 text-xs font-medium <?= $currentLocale === 'en' ? 'text-indigo-600 bg-indigo-50/50 font-semibold' : 'text-slate-700 hover:bg-slate-50' ?>">
+                                <span>English</span>
+                                <?php if ($currentLocale === 'en'): ?><i class="bi bi-check2 text-indigo-600"></i><?php endif; ?>
+                            </a>
+                            <a href="<?= site_url('lang/es') ?>"
+                               class="flex items-center justify-between px-3 py-1.5 text-xs font-medium <?= $currentLocale === 'es' ? 'text-indigo-600 bg-indigo-50/50 font-semibold' : 'text-slate-700 hover:bg-slate-50' ?>">
+                                <span>Español</span>
+                                <?php if ($currentLocale === 'es'): ?><i class="bi bi-check2 text-indigo-600"></i><?php endif; ?>
+                            </a>
+                        </div>
+                    </div>
+
                     <a href="<?= site_url('events/new') ?>"
                        class="inline-flex items-center gap-1.5 px-3.5 py-2 text-sm font-semibold text-white bg-indigo-600 rounded-lg shadow-sm hover:bg-indigo-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 transition">
                         <i class="bi bi-plus-lg"></i>
-                        <span>New Event</span>
+                        <span><?= lang('App.nav_new_event') ?></span>
                     </a>
                     <a href="<?= site_url('providers/new') ?>"
                        class="inline-flex items-center gap-1.5 px-3.5 py-2 text-sm font-semibold text-slate-700 bg-white border border-slate-300 rounded-lg shadow-2xs hover:bg-slate-50 transition">
                         <i class="bi bi-person-plus"></i>
-                        <span>New Provider</span>
+                        <span><?= lang('App.nav_new_provider') ?></span>
                     </a>
                 </div>
 
@@ -110,23 +134,30 @@
         <!-- MOBILE MENU DROPDOWN -->
         <div id="mobile-nav" class="hidden md:hidden border-t border-slate-200 bg-white px-4 pt-2 pb-4 space-y-1">
             <a href="<?= site_url('/') ?>" class="block px-3 py-2 rounded-md text-base font-medium <?= uri_string() === '' ? 'text-indigo-600 bg-indigo-50 font-semibold' : 'text-slate-700 hover:bg-slate-100' ?>">
-                <i class="bi bi-speedometer2 mr-2"></i>Dashboard
+                <i class="bi bi-speedometer2 mr-2"></i><?= lang('App.nav_dashboard') ?>
             </a>
             <a href="<?= site_url('events') ?>" class="block px-3 py-2 rounded-md text-base font-medium <?= str_starts_with(uri_string(), 'events') ? 'text-indigo-600 bg-indigo-50 font-semibold' : 'text-slate-700 hover:bg-slate-100' ?>">
-                <i class="bi bi-calendar-check mr-2"></i>Events
+                <i class="bi bi-calendar-check mr-2"></i><?= lang('App.nav_events') ?>
             </a>
             <a href="<?= site_url('providers') ?>" class="block px-3 py-2 rounded-md text-base font-medium <?= str_starts_with(uri_string(), 'providers') ? 'text-indigo-600 bg-indigo-50 font-semibold' : 'text-slate-700 hover:bg-slate-100' ?>">
-                <i class="bi bi-people mr-2"></i>Providers
+                <i class="bi bi-people mr-2"></i><?= lang('App.nav_providers') ?>
             </a>
             <a href="<?= site_url('categories') ?>" class="block px-3 py-2 rounded-md text-base font-medium <?= str_starts_with(uri_string(), 'categories') ? 'text-indigo-600 bg-indigo-50 font-semibold' : 'text-slate-700 hover:bg-slate-100' ?>">
-                <i class="bi bi-grid mr-2"></i>Categories
+                <i class="bi bi-grid mr-2"></i><?= lang('App.nav_categories') ?>
             </a>
             <div class="pt-3 border-t border-slate-200 flex flex-col gap-2">
+                <div class="flex items-center justify-between px-1 py-1">
+                    <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider"><?= lang('App.language') ?></span>
+                    <div class="flex items-center gap-1.5">
+                        <a href="<?= site_url('lang/en') ?>" class="px-2.5 py-1 text-xs font-semibold rounded-md <?= $currentLocale === 'en' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200' ?>">EN</a>
+                        <a href="<?= site_url('lang/es') ?>" class="px-2.5 py-1 text-xs font-semibold rounded-md <?= $currentLocale === 'es' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200' ?>">ES</a>
+                    </div>
+                </div>
                 <a href="<?= site_url('events/new') ?>" class="w-full text-center px-4 py-2 text-sm font-semibold text-white bg-indigo-600 rounded-lg hover:bg-indigo-700">
-                    <i class="bi bi-plus-lg mr-1"></i>New Event
+                    <i class="bi bi-plus-lg mr-1"></i><?= lang('App.nav_new_event') ?>
                 </a>
                 <a href="<?= site_url('providers/new') ?>" class="w-full text-center px-4 py-2 text-sm font-semibold text-slate-700 bg-slate-100 rounded-lg hover:bg-slate-200">
-                    <i class="bi bi-person-plus mr-1"></i>New Provider
+                    <i class="bi bi-person-plus mr-1"></i><?= lang('App.nav_new_provider') ?>
                 </a>
             </div>
         </div>
@@ -165,7 +196,7 @@
                 <div class="flex items-center justify-between mb-2">
                     <div class="flex items-center gap-2 font-semibold text-sm text-rose-900">
                         <i class="bi bi-exclamation-octagon-fill text-rose-600"></i>
-                        <span>Please correct the following errors:</span>
+                        <span><?= lang('App.errors_heading') ?></span>
                     </div>
                     <button type="button" onclick="document.getElementById('flash-alert-errors').remove()" class="text-rose-500 hover:text-rose-700 p-1">
                         <i class="bi bi-x-lg text-sm"></i>
@@ -188,11 +219,11 @@
     <footer class="mt-auto bg-white border-t border-slate-200 py-6">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-slate-500">
             <div class="flex items-center gap-2">
-                <span class="font-bold text-slate-800">EventMaster</span>
-                <span>&bull; Powered by CodeIgniter <?= CodeIgniter\CodeIgniter::CI_VERSION ?> & Tailwind CSS</span>
+                <span class="font-bold text-slate-800"><?= lang('App.brand_name') ?></span>
+                <span>&bull; <?= lang('App.footer_powered', [CodeIgniter\CodeIgniter::CI_VERSION]) ?></span>
             </div>
             <div>
-                <span>Catering &bull; Venues &bull; DJs &bull; Photography &bull; Lighting &bull; Audio</span>
+                <span><?= lang('App.footer_tagline') ?></span>
             </div>
         </div>
     </footer>
@@ -203,6 +234,22 @@
             const nav = document.getElementById('mobile-nav');
             nav.classList.toggle('hidden');
         }
+
+        function toggleLangMenu() {
+            const dropdown = document.getElementById('lang-dropdown');
+            if (dropdown) {
+                dropdown.classList.toggle('hidden');
+            }
+        }
+
+        // Close language dropdown on outside click
+        window.addEventListener('click', function(e) {
+            const container = document.getElementById('lang-menu-container');
+            const dropdown = document.getElementById('lang-dropdown');
+            if (container && dropdown && !container.contains(e.target)) {
+                dropdown.classList.add('hidden');
+            }
+        });
 
         // Modal open / close handlers
         function openModal(id) {
@@ -272,7 +319,8 @@
                     // Update Checklist & Milestone Tasks counter badge
                     const counterBadge = document.getElementById('task-counter-badge');
                     if (counterBadge && data.totalTasks !== undefined && data.completedTasks !== undefined) {
-                        counterBadge.textContent = `${data.completedTasks} / ${data.totalTasks} Done (${data.taskPercentage}%)`;
+                        const doneText = counterBadge.getAttribute('data-done-text') || 'Done';
+                        counterBadge.textContent = `${data.completedTasks} / ${data.totalTasks} ${doneText} (${data.taskPercentage}%)`;
                     }
 
                     // Update Checklist & Milestone Tasks progress bar
@@ -286,7 +334,8 @@
                     const pendingList = document.getElementById('pending-tasks-list');
                     if (pendingCounter && pendingList) {
                         const remaining = pendingList.querySelectorAll('input[type="checkbox"]:not(:checked)').length;
-                        pendingCounter.textContent = `${remaining} pending`;
+                        const pendingText = pendingCounter.getAttribute('data-pending-text') || 'pending';
+                        pendingCounter.textContent = `${remaining} ${pendingText}`;
                     }
                 } else {
                     if (checkboxEl) {

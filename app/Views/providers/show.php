@@ -5,17 +5,17 @@
 <!-- BREADCRUMB & TOP ACTIONS -->
 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
     <nav class="flex text-xs font-semibold text-slate-500 gap-2 items-center">
-        <a href="<?= site_url('providers') ?>" class="hover:text-indigo-600">Providers</a>
+        <a href="<?= site_url('providers') ?>" class="hover:text-indigo-600"><?= lang('App.nav_providers') ?></a>
         <span>/</span>
         <span class="text-slate-800"><?= esc($provider['name']) ?></span>
     </nav>
     <div class="flex items-center gap-2">
         <a href="<?= site_url('providers/' . $provider['id'] . '/edit') ?>"
            class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 shadow-2xs transition">
-            <i class="bi bi-pencil"></i> Edit Profile
+            <i class="bi bi-pencil"></i> <?= lang('App.edit') ?>
         </a>
         <button type="button" onclick="openModal('modal-delete-provider')"
-                class="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold text-rose-600 bg-rose-50 border border-rose-200 rounded-lg hover:bg-rose-100 transition" title="Delete Provider">
+                class="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold text-rose-600 bg-rose-50 border border-rose-200 rounded-lg hover:bg-rose-100 transition" title="<?= lang('App.delete') ?>">
             <i class="bi bi-trash"></i>
         </button>
     </div>
@@ -117,9 +117,9 @@
     <div class="px-6 py-4 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3">
         <div class="flex items-center gap-2">
             <i class="bi bi-calendar-check text-indigo-600 text-lg"></i>
-            <h2 class="text-base font-bold text-slate-900">Event Bookings History</h2>
+            <h2 class="text-base font-bold text-slate-900"><?= lang('App.assigned_events_history') ?></h2>
             <span class="px-2.5 py-0.5 text-xs font-bold rounded-full bg-indigo-50 text-indigo-700">
-                <?= count($bookedEvents) ?> events
+                <?= count($bookedEvents) ?>
             </span>
         </div>
         <div class="text-xs text-slate-500 font-medium">
@@ -131,9 +131,9 @@
     <?php if (empty($bookedEvents)): ?>
         <div class="text-center py-12 px-4">
             <i class="bi bi-calendar-x text-4xl text-slate-300 block mb-2"></i>
-            <p class="text-sm font-medium text-slate-600 mb-3">This provider has not been assigned to any events yet.</p>
+            <p class="text-sm font-medium text-slate-600 mb-3"><?= lang('App.no_assigned_events') ?></p>
             <a href="<?= site_url('events') ?>" class="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 bg-indigo-600 text-white rounded-lg">
-                Go to Events to Hire
+                <?= lang('App.view_all_events') ?>
             </a>
         </div>
     <?php else: ?>
@@ -141,14 +141,14 @@
             <table class="w-full text-left border-collapse text-sm">
                 <thead class="bg-slate-50 text-slate-500 uppercase font-semibold text-[11px] tracking-wider border-b border-slate-100">
                     <tr>
-                        <th class="px-6 py-3.5">Event & Client</th>
-                        <th class="px-4 py-3.5">Event Date</th>
-                        <th class="px-4 py-3.5">Service Description</th>
-                        <th class="px-4 py-3.5">Agreed Fee</th>
-                        <th class="px-4 py-3.5">Deposit Paid</th>
-                        <th class="px-4 py-3.5">Payment</th>
+                        <th class="px-6 py-3.5"><?= lang('App.col_event_client') ?></th>
+                        <th class="px-4 py-3.5"><?= lang('App.sort_date') ?></th>
+                        <th class="px-4 py-3.5"><?= lang('App.col_service_scope') ?></th>
+                        <th class="px-4 py-3.5"><?= lang('App.col_agreed_cost') ?></th>
+                        <th class="px-4 py-3.5"><?= lang('App.col_deposit') ?></th>
+                        <th class="px-4 py-3.5"><?= lang('App.col_deposit_status') ?></th>
                         <th class="px-4 py-3.5">Contract</th>
-                        <th class="px-6 py-3.5 text-right">Event Details</th>
+                        <th class="px-6 py-3.5 text-right"><?= lang('App.actions') ?></th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100 text-slate-700">
@@ -222,19 +222,19 @@
                 <i class="bi bi-x-lg"></i>
             </button>
         </div>
-        <h3 class="text-lg font-bold text-slate-900">Delete Provider?</h3>
+        <h3 class="text-lg font-bold text-slate-900"><?= lang('App.delete_provider') ?>?</h3>
         <p class="text-sm text-slate-500 mt-2">
-            Are you sure you want to permanently delete <strong><?= esc($provider['name']) ?></strong>? This will remove the provider from the directory.
+            <?= lang('App.delete_provider_confirm', ['<strong>' . esc($provider['name']) . '</strong>']) ?>
         </p>
         <div class="flex items-center justify-end gap-2.5 mt-6 pt-4 border-t border-slate-100">
             <button type="button" onclick="closeModal('modal-delete-provider')"
                     class="px-4 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition">
-                Cancel
+                <?= lang('App.cancel') ?>
             </button>
             <form method="post" action="<?= site_url('providers/' . $provider['id'] . '/delete') ?>">
                 <?= csrf_field() ?>
                 <button type="submit" class="px-4 py-2 text-xs font-semibold text-white bg-rose-600 hover:bg-rose-700 rounded-xl transition">
-                    Yes, Delete Provider
+                    <?= lang('App.yes_delete') ?>
                 </button>
             </form>
         </div>

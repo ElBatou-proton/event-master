@@ -4,6 +4,9 @@ use CodeIgniter\Router\RouteCollection;
 
 /** @var RouteCollection $routes */
 
+// Language Switcher
+$routes->get('lang/(:segment)', 'Language::switch/$1');
+
 // Dashboard
 $routes->get('/', 'Dashboard::index');
 

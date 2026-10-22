@@ -21,7 +21,7 @@ class Categories extends BaseController
         $categories = $this->categoryModel->getCategoriesWithProviderCount();
 
         return view('categories/index', [
-            'title'      => 'Service Categories',
+            'title'      => lang('App.category_management'),
             'categories' => $categories,
         ]);
     }
@@ -42,7 +42,7 @@ class Categories extends BaseController
         }
 
         return redirect()->to(site_url('categories'))
-                         ->with('success', 'New service category created.');
+                         ->with('success', lang('App.flash_category_created'));
     }
 
     public function delete(int $id)
@@ -55,12 +55,12 @@ class Categories extends BaseController
         $providerCount = $this->providerModel->where('category_id', $id)->countAllResults();
         if ($providerCount > 0) {
             return redirect()->to(site_url('categories'))
-                             ->with('error', "Cannot delete category '{$category['name']}' because it has {$providerCount} provider(s) linked to it.");
+                             ->with('error', lang('App.flash_category_has_providers'));
         }
 
         $this->categoryModel->delete($id);
 
         return redirect()->to(site_url('categories'))
-                         ->with('success', "Category '{$category['name']}' deleted.");
+                         ->with('success', lang('App.flash_category_deleted'));
     }
 }

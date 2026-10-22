@@ -5,18 +5,18 @@
 <!-- PAGE HEADER -->
 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
     <div>
-        <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Service Providers Directory</h1>
-        <p class="text-slate-500 text-sm mt-1">Manage caterers, venues, DJs, photographers, florists, and production crews.</p>
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight"><?= lang('App.provider_directory') ?></h1>
+        <p class="text-slate-500 text-sm mt-1"><?= lang('App.providers_subtitle') ?></p>
     </div>
     <div class="flex items-center gap-2.5">
         <a href="<?= site_url('categories') ?>"
            class="inline-flex items-center gap-1.5 px-3.5 py-2.5 text-sm font-semibold text-slate-700 bg-white border border-slate-300 rounded-xl hover:bg-slate-50 shadow-2xs transition">
-            <i class="bi bi-grid"></i> Categories
+            <i class="bi bi-grid"></i> <?= lang('App.nav_categories') ?>
         </a>
         <a href="<?= site_url('providers/new') ?>"
            class="inline-flex items-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-xl shadow-xs transition">
             <i class="bi bi-person-plus-fill"></i>
-            <span>Register Provider</span>
+            <span><?= lang('App.nav_new_provider') ?></span>
         </a>
     </div>
 </div>
@@ -31,7 +31,7 @@
             </span>
             <input type="text" name="search"
                    class="block w-full pl-9 pr-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition"
-                   placeholder="Search provider, contact person, city..."
+                   placeholder="<?= lang('App.search_providers_placeholder') ?>"
                    value="<?= esc($search ?? '') ?>">
         </div>
 
@@ -39,7 +39,7 @@
         <div class="lg:col-span-3">
             <select name="category_id" onchange="this.form.submit()"
                     class="block w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition">
-                <option value="">All Categories</option>
+                <option value=""><?= lang('App.all_categories') ?></option>
                 <?php foreach ($categories as $cat): ?>
                     <option value="<?= $cat['id'] ?>" <?= ($categoryId ?? 0) == $cat['id'] ? 'selected' : '' ?>>
                         <?= esc($cat['name']) ?>
@@ -52,7 +52,7 @@
         <div class="lg:col-span-2">
             <select name="status" onchange="this.form.submit()"
                     class="block w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition">
-                <option value="">All Statuses</option>
+                <option value=""><?= lang('App.all_statuses') ?></option>
                 <option value="preferred" <?= ($status ?? '') === 'preferred' ? 'selected' : '' ?>>Preferred</option>
                 <option value="active" <?= ($status ?? '') === 'active' ? 'selected' : '' ?>>Active</option>
                 <option value="inactive" <?= ($status ?? '') === 'inactive' ? 'selected' : '' ?>>Inactive</option>
@@ -62,10 +62,10 @@
         <!-- Buttons -->
         <div class="lg:col-span-2 flex items-center gap-2">
             <button type="submit" class="w-full px-3.5 py-2 text-sm font-semibold bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-2xs transition">
-                Filter
+                <?= lang('App.filter') ?>
             </button>
             <?php if (!empty($search) || !empty($categoryId) || !empty($status)): ?>
-                <a href="<?= site_url('providers') ?>" class="p-2 text-slate-500 hover:text-slate-800 bg-slate-100 rounded-xl transition" title="Clear Filters">
+                <a href="<?= site_url('providers') ?>" class="p-2 text-slate-500 hover:text-slate-800 bg-slate-100 rounded-xl transition" title="<?= lang('App.clear_filters') ?>">
                     <i class="bi bi-x-lg"></i>
                 </a>
             <?php endif; ?>
@@ -77,10 +77,10 @@
 <?php if (empty($providers)): ?>
     <div class="bg-white rounded-2xl border border-slate-200/80 shadow-2xs text-center py-16 px-4">
         <i class="bi bi-person-x text-5xl text-slate-300 block mb-3"></i>
-        <h3 class="text-base font-bold text-slate-800">No service providers found</h3>
-        <p class="text-sm text-slate-500 mb-4 mt-1">Try adjusting your filters or register a new vendor in the directory.</p>
+        <h3 class="text-base font-bold text-slate-800"><?= lang('App.no_providers_found') ?></h3>
+        <p class="text-sm text-slate-500 mb-4 mt-1"><?= lang('App.add_first_provider') ?></p>
         <a href="<?= site_url('providers/new') ?>" class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm font-semibold rounded-xl">
-            Register Provider
+            <?= lang('App.create_new_provider') ?>
         </a>
     </div>
 <?php else: ?>
@@ -156,14 +156,14 @@
                     <div class="flex items-center gap-1.5">
                         <a href="<?= site_url('providers/' . $prov['id']) ?>"
                            class="px-2.5 py-1 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition">
-                            View
+                            <?= lang('App.view') ?>
                         </a>
                         <a href="<?= site_url('providers/' . $prov['id'] . '/edit') ?>"
-                           class="p-1 text-slate-400 hover:text-slate-700 rounded-lg transition" title="Edit">
+                           class="p-1 text-slate-400 hover:text-slate-700 rounded-lg transition" title="<?= lang('App.edit') ?>">
                             <i class="bi bi-pencil"></i>
                         </a>
                         <button type="button" onclick="openModal('delete-prov-modal-<?= $prov['id'] ?>')"
-                                class="p-1 text-slate-400 hover:text-rose-600 rounded-lg transition" title="Delete">
+                                class="p-1 text-slate-400 hover:text-rose-600 rounded-lg transition" title="<?= lang('App.delete') ?>">
                             <i class="bi bi-trash"></i>
                         </button>
                     </div>
@@ -180,19 +180,19 @@
                                 <i class="bi bi-x-lg"></i>
                             </button>
                         </div>
-                        <h3 class="text-lg font-bold text-slate-900">Delete Provider?</h3>
+                        <h3 class="text-lg font-bold text-slate-900"><?= lang('App.delete_provider') ?>?</h3>
                         <p class="text-sm text-slate-500 mt-2">
-                            Are you sure you want to delete <strong><?= esc($prov['name']) ?></strong> from the directory?
+                            <?= lang('App.delete_provider_confirm', ['<strong>' . esc($prov['name']) . '</strong>']) ?>
                         </p>
                         <div class="flex items-center justify-end gap-2.5 mt-6 pt-4 border-t border-slate-100">
                             <button type="button" onclick="closeModal('delete-prov-modal-<?= $prov['id'] ?>')"
                                     class="px-4 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition">
-                                Cancel
+                                <?= lang('App.cancel') ?>
                             </button>
                             <form method="post" action="<?= site_url('providers/' . $prov['id'] . '/delete') ?>">
                                 <?= csrf_field() ?>
                                 <button type="submit" class="px-4 py-2 text-xs font-semibold text-white bg-rose-600 hover:bg-rose-700 rounded-xl transition">
-                                    Yes, Delete
+                                    <?= lang('App.yes_delete') ?>
                                 </button>
                             </form>
                         </div>

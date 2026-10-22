@@ -25,7 +25,7 @@ class Dashboard extends BaseController
         $topProviders    = array_slice($topProviders, 0, 6);
 
         return view('dashboard/index', [
-            'title'          => 'Event Planner Dashboard',
+            'title'          => lang('App.dashboard_title'),
             'stats'          => $stats,
             'upcomingEvents' => $upcomingEvents,
             'pendingTasks'   => $pendingTasks,

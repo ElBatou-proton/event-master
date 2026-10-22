@@ -5,14 +5,14 @@
 <!-- PAGE HEADER -->
 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
     <div>
-        <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Events Directory</h1>
-        <p class="text-slate-500 text-sm mt-1">Track all events, budgets, schedules, and assigned providers.</p>
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight"><?= lang('App.all_events') ?></h1>
+        <p class="text-slate-500 text-sm mt-1"><?= lang('App.events_subtitle') ?></p>
     </div>
     <div>
         <a href="<?= site_url('events/new') ?>"
            class="inline-flex items-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-xl shadow-xs transition">
             <i class="bi bi-calendar-plus"></i>
-            <span>Create New Event</span>
+            <span><?= lang('App.nav_new_event') ?></span>
         </a>
     </div>
 </div>
@@ -27,7 +27,7 @@
             </span>
             <input type="text" name="search"
                    class="block w-full pl-9 pr-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition"
-                   placeholder="Search title, client, venue..."
+                   placeholder="<?= lang('App.search_events_placeholder') ?>"
                    value="<?= esc($search ?? '') ?>">
         </div>
 
@@ -35,13 +35,13 @@
         <div class="lg:col-span-3">
             <select name="status" onchange="this.form.submit()"
                     class="block w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition">
-                <option value="">All Statuses</option>
+                <option value=""><?= lang('App.all_statuses') ?></option>
                 <option value="planning" <?= ($status ?? '') === 'planning' ? 'selected' : '' ?>>Planning</option>
-                <option value="confirmed" <?= ($status ?? '') === 'confirmed' ? 'selected' : '' ?>>Confirmed</option>
-                <option value="in_progress" <?= ($status ?? '') === 'in_progress' ? 'selected' : '' ?>>In Progress</option>
-                <option value="completed" <?= ($status ?? '') === 'completed' ? 'selected' : '' ?>>Completed</option>
-                <option value="cancelled" <?= ($status ?? '') === 'cancelled' ? 'selected' : '' ?>>Cancelled</option>
-                <option value="draft" <?= ($status ?? '') === 'draft' ? 'selected' : '' ?>>Draft</option>
+                <option value="confirmed" <?= ($status ?? '') === 'confirmed' ? 'selected' : '' ?>><?= lang('App.status_confirmed') ?></option>
+                <option value="in_progress" <?= ($status ?? '') === 'in_progress' ? 'selected' : '' ?>><?= lang('App.status_in_progress') ?></option>
+                <option value="completed" <?= ($status ?? '') === 'completed' ? 'selected' : '' ?>><?= lang('App.status_completed') ?></option>
+                <option value="cancelled" <?= ($status ?? '') === 'cancelled' ? 'selected' : '' ?>><?= lang('App.status_cancelled') ?></option>
+                <option value="draft" <?= ($status ?? '') === 'draft' ? 'selected' : '' ?>><?= lang('App.status_draft') ?></option>
             </select>
         </div>
 
@@ -49,25 +49,24 @@
         <div class="lg:col-span-2">
             <select name="type" onchange="this.form.submit()"
                     class="block w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition">
-                <option value="">All Types</option>
-                <option value="wedding" <?= ($type ?? '') === 'wedding' ? 'selected' : '' ?>>Wedding</option>
-                <option value="corporate" <?= ($type ?? '') === 'corporate' ? 'selected' : '' ?>>Corporate</option>
-                <option value="birthday" <?= ($type ?? '') === 'birthday' ? 'selected' : '' ?>>Birthday</option>
-                <option value="conference" <?= ($type ?? '') === 'conference' ? 'selected' : '' ?>>Conference</option>
-                <option value="concert" <?= ($type ?? '') === 'concert' ? 'selected' : '' ?>>Concert</option>
-                <option value="party" <?= ($type ?? '') === 'party' ? 'selected' : '' ?>>Party</option>
-                <option value="anniversary" <?= ($type ?? '') === 'anniversary' ? 'selected' : '' ?>>Anniversary</option>
-                <option value="other" <?= ($type ?? '') === 'other' ? 'selected' : '' ?>>Other</option>
+                <option value=""><?= lang('App.all_types') ?></option>
+                <option value="wedding" <?= ($type ?? '') === 'wedding' ? 'selected' : '' ?>><?= lang('App.type_wedding') ?></option>
+                <option value="corporate" <?= ($type ?? '') === 'corporate' ? 'selected' : '' ?>><?= lang('App.type_corporate') ?></option>
+                <option value="birthday" <?= ($type ?? '') === 'birthday' ? 'selected' : '' ?>><?= lang('App.type_birthday') ?></option>
+                <option value="conference" <?= ($type ?? '') === 'conference' ? 'selected' : '' ?>><?= lang('App.type_conference') ?></option>
+                <option value="anniversary" <?= ($type ?? '') === 'anniversary' ? 'selected' : '' ?>><?= lang('App.type_anniversary') ?></option>
+                <option value="gala" <?= ($type ?? '') === 'gala' ? 'selected' : '' ?>><?= lang('App.type_gala') ?></option>
+                <option value="other" <?= ($type ?? '') === 'other' ? 'selected' : '' ?>><?= lang('App.type_other') ?></option>
             </select>
         </div>
 
         <!-- Buttons -->
         <div class="lg:col-span-2 flex items-center gap-2">
             <button type="submit" class="w-full px-3.5 py-2 text-sm font-semibold bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-2xs transition">
-                Filter
+                <?= lang('App.filter') ?>
             </button>
             <?php if (!empty($search) || !empty($status) || !empty($type)): ?>
-                <a href="<?= site_url('events') ?>" class="p-2 text-slate-500 hover:text-slate-800 bg-slate-100 rounded-xl transition" title="Clear Filters">
+                <a href="<?= site_url('events') ?>" class="p-2 text-slate-500 hover:text-slate-800 bg-slate-100 rounded-xl transition" title="<?= lang('App.clear_filters') ?>">
                     <i class="bi bi-x-lg"></i>
                 </a>
             <?php endif; ?>
@@ -80,10 +79,10 @@
     <?php if (empty($events)): ?>
         <div class="text-center py-16 px-4">
             <i class="bi bi-calendar-x text-5xl text-slate-300 block mb-3"></i>
-            <h3 class="text-base font-bold text-slate-800">No events found</h3>
-            <p class="text-sm text-slate-500 mb-4 mt-1">Try adjusting your filters or create a new event record.</p>
+            <h3 class="text-base font-bold text-slate-800"><?= lang('App.no_events_found') ?></h3>
+            <p class="text-sm text-slate-500 mb-4 mt-1"><?= lang('App.create_first_event') ?></p>
             <a href="<?= site_url('events/new') ?>" class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm font-semibold rounded-xl">
-                Create Event
+                <?= lang('App.create_new_event') ?>
             </a>
         </div>
     <?php else: ?>
@@ -91,13 +90,13 @@
             <table class="w-full text-left border-collapse text-sm">
                 <thead class="bg-slate-50 text-slate-500 uppercase font-semibold text-[11px] tracking-wider border-b border-slate-100">
                     <tr>
-                        <th class="px-6 py-3.5">Event & Client</th>
-                        <th class="px-4 py-3.5">Date & Schedule</th>
-                        <th class="px-4 py-3.5">Venue & Guests</th>
-                        <th class="px-4 py-3.5">Status</th>
-                        <th class="px-4 py-3.5 min-w-[200px]">Budget & Costs</th>
-                        <th class="px-4 py-3.5">Vendors</th>
-                        <th class="px-6 py-3.5 text-right">Actions</th>
+                        <th class="px-6 py-3.5"><?= lang('App.col_event_client') ?></th>
+                        <th class="px-4 py-3.5"><?= lang('App.col_date_time') ?></th>
+                        <th class="px-4 py-3.5"><?= lang('App.col_location') ?></th>
+                        <th class="px-4 py-3.5"><?= lang('App.col_status') ?></th>
+                        <th class="px-4 py-3.5 min-w-[200px]"><?= lang('App.col_budget') ?></th>
+                        <th class="px-4 py-3.5"><?= lang('App.col_providers') ?></th>
+                        <th class="px-6 py-3.5 text-right"><?= lang('App.actions') ?></th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100 text-slate-700">
@@ -116,6 +115,18 @@
                                 'draft'       => 'bg-gray-100 text-gray-700 border-gray-200',
                             ];
                             $badgeClass = $statusClasses[$evt['status']] ?? 'bg-slate-100 text-slate-700';
+
+                            $statusKey = 'App.status_' . $evt['status'];
+                            $translatedStatus = lang($statusKey);
+                            if ($translatedStatus === $statusKey) {
+                                $translatedStatus = ucwords(str_replace('_', ' ', $evt['status']));
+                            }
+
+                            $typeKey = 'App.type_' . $evt['event_type'];
+                            $translatedType = lang($typeKey);
+                            if ($translatedType === $typeKey) {
+                                $translatedType = ucfirst($evt['event_type']);
+                            }
                         ?>
                         <tr class="hover:bg-slate-50/80 transition">
                             <td class="px-6 py-4">
@@ -124,7 +135,7 @@
                                 </a>
                                 <div class="flex items-center gap-2 mt-1 text-xs text-slate-500">
                                     <span><i class="bi bi-person mr-1"></i><?= esc($evt['client_name']) ?></span>
-                                    <span class="inline-block px-1.5 py-0.5 rounded-sm bg-slate-100 text-slate-600 border border-slate-200 capitalize font-medium text-[10px]"><?= esc($evt['event_type']) ?></span>
+                                    <span class="inline-block px-1.5 py-0.5 rounded-sm bg-slate-100 text-slate-600 border border-slate-200 font-medium text-[10px]"><?= esc($translatedType) ?></span>
                                 </div>
                             </td>
                             <td class="px-4 py-4 whitespace-nowrap">
@@ -132,24 +143,22 @@
                                 <div class="text-xs text-slate-500 mt-0.5">
                                     <?php if ($evt['start_time']): ?>
                                         <i class="bi bi-clock mr-1"></i><?= substr($evt['start_time'], 0, 5) ?><?= $evt['end_time'] ? ' - ' . substr($evt['end_time'], 0, 5) : '' ?>
-                                    <?php else: ?>
-                                        <span>Full Day</span>
                                     <?php endif; ?>
                                 </div>
                             </td>
                             <td class="px-4 py-4">
-                                <div class="truncate max-w-[160px] text-xs text-slate-700" title="<?= esc($evt['location_venue'] ?? 'Location TBD') ?>">
-                                    <i class="bi bi-geo-alt text-slate-400 mr-1"></i><?= esc($evt['location_venue'] ?? 'Location TBD') ?>
+                                <div class="truncate max-w-[160px] text-xs text-slate-700" title="<?= esc($evt['location_venue'] ?? lang('App.venue_tba')) ?>">
+                                    <i class="bi bi-geo-alt text-slate-400 mr-1"></i><?= esc($evt['location_venue'] ?? lang('App.venue_tba')) ?>
                                 </div>
                                 <?php if ($evt['guest_count'] > 0): ?>
                                     <div class="text-xs text-slate-400 mt-0.5">
-                                        <i class="bi bi-people mr-1"></i><?= esc($evt['guest_count']) ?> guests
+                                        <i class="bi bi-people mr-1"></i><?= esc($evt['guest_count']) ?> <?= lang('App.expected_guests') ?>
                                     </div>
                                 <?php endif; ?>
                             </td>
                             <td class="px-4 py-4 whitespace-nowrap">
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border <?= $badgeClass ?> capitalize">
-                                    <?= esc(str_replace('_', ' ', $evt['status'])) ?>
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border <?= $badgeClass ?>">
+                                    <?= esc($translatedStatus) ?>
                                 </span>
                             </td>
                             <td class="px-4 py-4">
@@ -172,15 +181,15 @@
                             <td class="px-6 py-4 text-right whitespace-nowrap">
                                 <div class="inline-flex items-center gap-1.5">
                                     <a href="<?= site_url('events/' . $evt['id']) ?>"
-                                       class="p-1.5 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition" title="View & Manage">
+                                       class="p-1.5 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition" title="<?= lang('App.view_details') ?>">
                                         <i class="bi bi-eye"></i>
                                     </a>
                                     <a href="<?= site_url('events/' . $evt['id'] . '/edit') ?>"
-                                       class="p-1.5 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition" title="Edit">
+                                       class="p-1.5 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition" title="<?= lang('App.edit') ?>">
                                         <i class="bi bi-pencil"></i>
                                     </a>
                                     <button type="button" onclick="openModal('delete-modal-<?= $evt['id'] ?>')"
-                                            class="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition" title="Delete">
+                                            class="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition" title="<?= lang('App.delete') ?>">
                                         <i class="bi bi-trash"></i>
                                     </button>
                                 </div>
@@ -196,18 +205,19 @@
                                                 <i class="bi bi-x-lg"></i>
                                             </button>
                                         </div>
-                                        <h3 class="text-lg font-bold text-slate-900">Delete Event?</h3>
+                                        <h3 class="text-lg font-bold text-slate-900"><?= lang('App.delete_event') ?>?</h3>
                                         <p class="text-sm text-slate-500 mt-2">
-                                            Are you sure you want to permanently delete <strong><?= esc($evt['title']) ?></strong>? All provider assignments and task records will be wiped.
+                                            <?= lang('App.delete_event_confirm', ['<strong>' . esc($evt['title']) . '</strong>']) ?>
                                         </p>
                                         <div class="flex items-center justify-end gap-2.5 mt-6 pt-4 border-t border-slate-100">
                                             <button type="button" onclick="closeModal('delete-modal-<?= $evt['id'] ?>')"
                                                     class="px-4 py-2 text-sm font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition">
-                                                Cancel
+                                                <?= lang('App.cancel') ?>
                                             </button>
                                             <form method="post" action="<?= site_url('events/' . $evt['id'] . '/delete') ?>">
+                                                <?= csrf_field() ?>
                                                 <button type="submit" class="px-4 py-2 text-sm font-semibold text-white bg-rose-600 hover:bg-rose-700 rounded-xl transition">
-                                                    Yes, Delete Event
+                                                    <?= lang('App.yes_delete') ?>
                                                 </button>
                                             </form>
                                         </div>

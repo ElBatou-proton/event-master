@@ -43,7 +43,9 @@ class CategoryModel extends Model
 
     public function getCategoriesWithProviderCount(): array
     {
-        return $this->select('categories.*, COUNT(providers.id) as provider_count')
+        $providersTable = $this->db->prefixTable('providers');
+
+        return $this->select("categories.*, COUNT({$providersTable}.id) as provider_count")
                     ->join('providers', 'providers.category_id = categories.id', 'left')
                     ->groupBy('categories.id')
                     ->orderBy('categories.name', 'ASC')

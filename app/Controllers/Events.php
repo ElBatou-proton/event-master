@@ -33,7 +33,7 @@ class Events extends BaseController
         $events = $this->eventModel->getFilteredEvents($status, $type, $search, $sort, $direction);
 
         return view('events/index', [
-            'title'     => 'All Events',
+            'title'     => lang('App.all_events'),
             'events'    => $events,
             'status'    => $status,
             'type'      => $type,
@@ -46,7 +46,7 @@ class Events extends BaseController
     public function new(): string
     {
         return view('events/form', [
-            'title' => 'Create New Event',
+            'title' => lang('App.create_new_event'),
             'event' => null,
         ]);
     }
@@ -79,7 +79,7 @@ class Events extends BaseController
         $id = $this->eventModel->getInsertID();
 
         return redirect()->to(site_url("events/{$id}"))
-                         ->with('success', 'Event created successfully! You can now assign providers and create tasks.');
+                         ->with('success', lang('App.flash_event_created'));
     }
 
     public function show(int $id): string
@@ -110,7 +110,7 @@ class Events extends BaseController
         }
 
         return view('events/form', [
-            'title' => 'Edit Event: ' . $event['title'],
+            'title' => lang('App.edit_event') . ': ' . $event['title'],
             'event' => $event,
         ]);
     }
@@ -147,7 +147,7 @@ class Events extends BaseController
         }
 
         return redirect()->to(site_url("events/{$id}"))
-                         ->with('success', 'Event details updated successfully.');
+                         ->with('success', lang('App.flash_event_updated'));
     }
 
     public function delete(int $id)
@@ -160,7 +160,7 @@ class Events extends BaseController
         $this->eventModel->delete($id);
 
         return redirect()->to(site_url('events'))
-                         ->with('success', "Event '{$event['title']}' deleted successfully.");
+                         ->with('success', lang('App.flash_event_deleted'));
     }
 
     public function addProvider(int $eventId)
@@ -192,7 +192,7 @@ class Events extends BaseController
         }
 
         return redirect()->to(site_url("events/{$eventId}"))
-                         ->with('success', 'Provider assigned to event successfully.');
+                         ->with('success', lang('App.flash_provider_assigned'));
     }
 
     public function updateProvider(int $eventId, int $eventProviderId)
@@ -215,7 +215,7 @@ class Events extends BaseController
         $this->eventProviderModel->save($data);
 
         return redirect()->to(site_url("events/{$eventId}"))
-                         ->with('success', 'Provider assignment updated successfully.');
+                         ->with('success', lang('App.flash_provider_assignment_updated'));
     }
 
     public function removeProvider(int $eventId, int $eventProviderId)
@@ -226,14 +226,14 @@ class Events extends BaseController
         }
 
         return redirect()->to(site_url("events/{$eventId}"))
-                         ->with('success', 'Provider removed from event.');
+                         ->with('success', lang('App.flash_provider_removed'));
     }
 
     public function addTask(int $eventId)
     {
         $title = trim((string) $this->request->getPost('title'));
         if (empty($title)) {
-            return redirect()->to(site_url("events/{$eventId}"))->with('error', 'Task title is required.');
+            return redirect()->to(site_url("events/{$eventId}"))->with('error', lang('App.flash_task_title_required'));
         }
 
         $data = [
@@ -248,7 +248,7 @@ class Events extends BaseController
         $this->taskModel->save($data);
 
         return redirect()->to(site_url("events/{$eventId}"))
-                         ->with('success', 'Task added to checklist.');
+                         ->with('success', lang('App.flash_task_added'));
     }
 
     public function toggleTask(int $taskId)
@@ -256,9 +256,9 @@ class Events extends BaseController
         $task = $this->taskModel->find($taskId);
         if (!$task) {
             if ($this->request->isAJAX()) {
-                return $this->response->setJSON(['status' => 'error', 'message' => 'Task not found']);
+                return $this->response->setJSON(['status' => 'error', 'message' => lang('App.flash_task_not_found')]);
             }
-            return redirect()->back()->with('error', 'Task not found.');
+            return redirect()->back()->with('error', lang('App.flash_task_not_found'));
         }
 
         $newStatus = $task['status'] === 'completed' ? 'todo' : 'completed';
@@ -280,13 +280,13 @@ class Events extends BaseController
             ]);
         }
 
-        return redirect()->back()->with('success', 'Task status updated.');
+        return redirect()->back()->with('success', lang('App.flash_task_status_updated'));
     }
 
     public function deleteTask(int $eventId, int $taskId)
     {
         $this->taskModel->where('id', $taskId)->where('event_id', $eventId)->delete();
         return redirect()->to(site_url("events/{$eventId}"))
-                         ->with('success', 'Task deleted.');
+                         ->with('success', lang('App.flash_task_deleted'));
     }
 }

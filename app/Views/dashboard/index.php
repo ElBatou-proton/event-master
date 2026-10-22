@@ -5,19 +5,19 @@
 <!-- PAGE HEADER -->
 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
     <div>
-        <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Event Planning Dashboard</h1>
-        <p class="text-slate-500 text-sm mt-1">Overview of upcoming events, vendor commitments, budgets, and tasks.</p>
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight"><?= lang('App.dashboard_title') ?></h1>
+        <p class="text-slate-500 text-sm mt-1"><?= lang('App.dashboard_subtitle') ?></p>
     </div>
     <div class="flex items-center gap-2.5">
         <a href="<?= site_url('events/new') ?>"
            class="inline-flex items-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-xl shadow-xs transition">
             <i class="bi bi-calendar-plus"></i>
-            <span>Create Event</span>
+            <span><?= lang('App.nav_new_event') ?></span>
         </a>
         <a href="<?= site_url('providers/new') ?>"
            class="inline-flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-sm font-semibold rounded-xl shadow-2xs transition">
             <i class="bi bi-person-plus"></i>
-            <span>Register Provider</span>
+            <span><?= lang('App.nav_new_provider') ?></span>
         </a>
     </div>
 </div>
@@ -28,9 +28,9 @@
     <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-2xs hover:shadow-md transition">
         <div class="flex items-center justify-between">
             <div>
-                <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Upcoming Events</p>
+                <p class="text-xs font-bold text-slate-400 uppercase tracking-wider"><?= lang('App.upcoming_events') ?></p>
                 <h3 class="text-3xl font-extrabold text-slate-900 mt-1"><?= esc($stats['upcoming_events']) ?></h3>
-                <p class="text-xs text-slate-500 mt-1"><?= esc($stats['total_events']) ?> total events registered</p>
+                <p class="text-xs text-slate-500 mt-1"><?= esc($stats['total_events']) ?> <?= lang('App.across_stages') ?></p>
             </div>
             <div class="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl">
                 <i class="bi bi-calendar-event"></i>
@@ -42,10 +42,10 @@
     <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-2xs hover:shadow-md transition">
         <div class="flex items-center justify-between">
             <div>
-                <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Event Budget</p>
+                <p class="text-xs font-bold text-slate-400 uppercase tracking-wider"><?= lang('App.total_budget_managed') ?></p>
                 <h3 class="text-3xl font-extrabold text-slate-900 mt-1">$<?= number_format($stats['total_budget'], 2) ?></h3>
                 <p class="text-xs text-emerald-600 font-semibold mt-1 flex items-center gap-1">
-                    <i class="bi bi-check-circle-fill"></i> Target budgets active
+                    <i class="bi bi-check-circle-fill"></i> <?= lang('App.active_portfolio') ?>
                 </p>
             </div>
             <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl">
@@ -58,9 +58,9 @@
     <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-2xs hover:shadow-md transition">
         <div class="flex items-center justify-between">
             <div>
-                <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Committed Costs</p>
+                <p class="text-xs font-bold text-slate-400 uppercase tracking-wider"><?= lang('App.total_committed_cost') ?></p>
                 <h3 class="text-3xl font-extrabold text-slate-900 mt-1">$<?= number_format($stats['total_committed'], 2) ?></h3>
-                <p class="text-xs text-slate-500 mt-1">$<?= number_format($stats['total_paid'], 2) ?> deposits cleared</p>
+                <p class="text-xs text-slate-500 mt-1">$<?= number_format($stats['total_paid'], 2) ?> <?= lang('App.deposits_paid') ?></p>
             </div>
             <div class="w-12 h-12 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center text-xl">
                 <i class="bi bi-receipt"></i>
@@ -72,10 +72,10 @@
     <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-2xs hover:shadow-md transition">
         <div class="flex items-center justify-between">
             <div>
-                <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Active Providers</p>
+                <p class="text-xs font-bold text-slate-400 uppercase tracking-wider"><?= lang('App.active_providers') ?></p>
                 <h3 class="text-3xl font-extrabold text-slate-900 mt-1"><?= esc($stats['total_providers']) ?></h3>
                 <p class="text-xs text-amber-600 font-semibold mt-1 flex items-center gap-1">
-                    <i class="bi bi-clock-history"></i> <?= esc($stats['pending_payments']) ?> payments pending
+                    <i class="bi bi-people-fill"></i> <?= lang('App.in_directory') ?>
                 </p>
             </div>
             <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl">
@@ -94,30 +94,30 @@
             <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
                 <div class="flex items-center gap-2">
                     <i class="bi bi-calendar3 text-indigo-600 text-lg"></i>
-                    <h2 class="text-base font-bold text-slate-900">Upcoming Scheduled Events</h2>
+                    <h2 class="text-base font-bold text-slate-900"><?= lang('App.upcoming_events') ?></h2>
                 </div>
                 <a href="<?= site_url('events') ?>" class="text-xs font-bold text-indigo-600 hover:text-indigo-800 transition">
-                    View All &rarr;
+                    <?= lang('App.view_all_events') ?> &rarr;
                 </a>
             </div>
 
             <?php if (empty($upcomingEvents)): ?>
                 <div class="text-center py-12 px-4">
                     <i class="bi bi-calendar-x text-4xl text-slate-300 block mb-2"></i>
-                    <p class="text-sm font-medium text-slate-500 mb-3">No upcoming events scheduled yet.</p>
-                    <a href="<?= site_url('events/new') ?>" class="inline-flex items-center gap-1 text-xs font-semibold px-3 py-1.5 bg-indigo-600 text-white rounded-lg">Create an Event</a>
+                    <p class="text-sm font-medium text-slate-500 mb-3"><?= lang('App.no_upcoming_events') ?></p>
+                    <a href="<?= site_url('events/new') ?>" class="inline-flex items-center gap-1 text-xs font-semibold px-3 py-1.5 bg-indigo-600 text-white rounded-lg"><?= lang('App.create_one_now') ?></a>
                 </div>
             <?php else: ?>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse text-sm">
                         <thead class="bg-slate-50 text-slate-500 uppercase font-semibold text-[11px] tracking-wider border-b border-slate-100">
                             <tr>
-                                <th class="px-6 py-3">Event & Client</th>
-                                <th class="px-4 py-3">Date & Schedule</th>
-                                <th class="px-4 py-3">Venue</th>
-                                <th class="px-4 py-3">Status</th>
-                                <th class="px-4 py-3">Budget</th>
-                                <th class="px-6 py-3 text-right">Action</th>
+                                <th class="px-6 py-3"><?= lang('App.col_event_client') ?></th>
+                                <th class="px-4 py-3"><?= lang('App.col_date_time') ?></th>
+                                <th class="px-4 py-3"><?= lang('App.col_location') ?></th>
+                                <th class="px-4 py-3"><?= lang('App.col_status') ?></th>
+                                <th class="px-4 py-3"><?= lang('App.col_budget') ?></th>
+                                <th class="px-6 py-3 text-right"><?= lang('App.actions') ?></th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100 text-slate-700">
@@ -137,6 +137,18 @@
                                         'draft'       => 'bg-gray-100 text-gray-700 border-gray-200',
                                     ];
                                     $badgeClass = $statusClasses[$evt['status']] ?? 'bg-slate-100 text-slate-700';
+
+                                    $statusKey = 'App.status_' . $evt['status'];
+                                    $translatedStatus = lang($statusKey);
+                                    if ($translatedStatus === $statusKey) {
+                                        $translatedStatus = ucwords(str_replace('_', ' ', $evt['status']));
+                                    }
+
+                                    $typeKey = 'App.type_' . $evt['event_type'];
+                                    $translatedType = lang($typeKey);
+                                    if ($translatedType === $typeKey) {
+                                        $translatedType = ucfirst($evt['event_type']);
+                                    }
                                 ?>
                                 <tr class="hover:bg-slate-50/80 transition">
                                     <td class="px-6 py-4">
@@ -145,7 +157,7 @@
                                         </a>
                                         <div class="flex items-center gap-2 mt-1 text-xs text-slate-500">
                                             <span><i class="bi bi-person mr-1"></i><?= esc($evt['client_name']) ?></span>
-                                            <span class="inline-block px-1.5 py-0.5 rounded-sm bg-slate-100 text-slate-600 border border-slate-200 capitalize font-medium text-[10px]"><?= esc($evt['event_type']) ?></span>
+                                            <span class="inline-block px-1.5 py-0.5 rounded-sm bg-slate-100 text-slate-600 border border-slate-200 font-medium text-[10px]"><?= esc($translatedType) ?></span>
                                         </div>
                                     </td>
                                     <td class="px-4 py-4 whitespace-nowrap">
@@ -164,13 +176,13 @@
                                         </div>
                                     </td>
                                     <td class="px-4 py-4">
-                                        <div class="truncate max-w-[150px] text-xs text-slate-600" title="<?= esc($evt['location_venue'] ?? 'TBD') ?>">
-                                            <i class="bi bi-geo-alt text-slate-400 mr-1"></i><?= esc($evt['location_venue'] ?? 'TBD') ?>
+                                        <div class="truncate max-w-[150px] text-xs text-slate-600" title="<?= esc($evt['location_venue'] ?? lang('App.venue_tba')) ?>">
+                                            <i class="bi bi-geo-alt text-slate-400 mr-1"></i><?= esc($evt['location_venue'] ?? lang('App.venue_tba')) ?>
                                         </div>
                                     </td>
                                     <td class="px-4 py-4 whitespace-nowrap">
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold border <?= $badgeClass ?> capitalize">
-                                            <?= esc(str_replace('_', ' ', $evt['status'])) ?>
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold border <?= $badgeClass ?>">
+                                            <?= esc($translatedStatus) ?>
                                         </span>
                                     </td>
                                     <td class="px-4 py-4 whitespace-nowrap font-semibold text-slate-900">
@@ -179,7 +191,7 @@
                                     <td class="px-6 py-4 text-right whitespace-nowrap">
                                         <a href="<?= site_url('events/' . $evt['id']) ?>"
                                            class="inline-flex items-center gap-1 px-3 py-1 text-xs font-semibold text-slate-700 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition shadow-2xs">
-                                            Manage <i class="bi bi-arrow-right text-[10px]"></i>
+                                            <?= lang('App.manage') ?> <i class="bi bi-arrow-right text-[10px]"></i>
                                         </a>
                                     </td>
                                 </tr>
@@ -197,10 +209,10 @@
             <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
                 <div class="flex items-center gap-2">
                     <i class="bi bi-check2-square text-emerald-600 text-lg"></i>
-                    <h2 class="text-base font-bold text-slate-900">Pending Tasks</h2>
+                    <h2 class="text-base font-bold text-slate-900"><?= lang('App.pending_tasks') ?></h2>
                 </div>
-                <span id="dashboard-pending-counter" class="px-2 py-0.5 text-xs font-bold rounded-full bg-slate-100 text-slate-600">
-                    <?= count($pendingTasks) ?> pending
+                <span id="dashboard-pending-counter" data-pending-text="<?= lang('App.pending') ?>" class="px-2 py-0.5 text-xs font-bold rounded-full bg-slate-100 text-slate-600">
+                    <?= count($pendingTasks) ?> <?= lang('App.pending') ?>
                 </span>
             </div>
 
@@ -208,7 +220,7 @@
                 <?php if (empty($pendingTasks)): ?>
                     <div class="text-center py-8">
                         <i class="bi bi-check-circle-fill text-3xl text-emerald-400 block mb-2"></i>
-                        <p class="text-sm font-medium text-slate-600">All checklist milestones are complete!</p>
+                        <p class="text-sm font-medium text-slate-600"><?= lang('App.all_milestones_complete') ?></p>
                     </div>
                 <?php else: ?>
                     <ul id="pending-tasks-list" class="divide-y divide-slate-100 space-y-3">
@@ -229,10 +241,14 @@
                                                 <i class="bi bi-link-45deg"></i><?= esc($task['event_title']) ?>
                                             </a>
                                             <?php if ($task['due_date']): ?>
-                                                <span>&bull; Due <?= date('M j', strtotime($task['due_date'])) ?></span>
+                                                <span>&bull; <?= lang('App.due') ?> <?= date('M j', strtotime($task['due_date'])) ?></span>
                                             <?php endif; ?>
                                             <?php if ($task['priority'] === 'high'): ?>
-                                                <span class="px-1.5 py-0.2 rounded bg-rose-50 text-rose-600 font-bold text-[10px]">High</span>
+                                                <span class="px-1.5 py-0.2 rounded bg-rose-50 text-rose-600 font-bold text-[10px]"><?= lang('App.priority_high') ?></span>
+                                            <?php elseif ($task['priority'] === 'medium'): ?>
+                                                <span class="px-1.5 py-0.2 rounded bg-amber-50 text-amber-700 font-semibold text-[10px]"><?= lang('App.priority_medium') ?></span>
+                                            <?php else: ?>
+                                                <span class="px-1.5 py-0.2 rounded bg-slate-100 text-slate-500 text-[10px]"><?= lang('App.priority_low') ?></span>
                                             <?php endif; ?>
                                         </div>
                                     </div>
@@ -254,10 +270,10 @@
         <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
             <div class="flex items-center gap-2">
                 <i class="bi bi-award text-amber-500 text-lg"></i>
-                <h2 class="text-base font-bold text-slate-900">Preferred Service Providers</h2>
+                <h2 class="text-base font-bold text-slate-900"><?= lang('App.preferred_providers') ?></h2>
             </div>
             <a href="<?= site_url('providers') ?>" class="text-xs font-bold text-indigo-600 hover:text-indigo-800 transition">
-                View All Vendors &rarr;
+                <?= lang('App.browse_directory') ?> &rarr;
             </a>
         </div>
 
@@ -318,10 +334,10 @@
         <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
             <div class="flex items-center gap-2">
                 <i class="bi bi-grid text-indigo-600 text-lg"></i>
-                <h2 class="text-base font-bold text-slate-900">Service Categories</h2>
+                <h2 class="text-base font-bold text-slate-900"><?= lang('App.categories_breakdown') ?></h2>
             </div>
             <a href="<?= site_url('categories') ?>" class="text-xs font-bold text-slate-500 hover:text-slate-800 transition">
-                Manage
+                <?= lang('App.manage') ?>
             </a>
         </div>
 

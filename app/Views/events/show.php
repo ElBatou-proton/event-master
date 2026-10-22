@@ -5,21 +5,21 @@
 <!-- BREADCRUMB & TOP ACTIONS -->
 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
     <nav class="flex text-xs font-semibold text-slate-500 gap-2 items-center">
-        <a href="<?= site_url('events') ?>" class="hover:text-indigo-600">Events</a>
+        <a href="<?= site_url('events') ?>" class="hover:text-indigo-600"><?= lang('App.nav_events') ?></a>
         <span>/</span>
         <span class="text-slate-800 truncate max-w-[200px] sm:max-w-none"><?= esc($event['title']) ?></span>
     </nav>
     <div class="flex items-center gap-2">
         <a href="<?= site_url('events/' . $event['id'] . '/edit') ?>"
            class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 shadow-2xs transition">
-            <i class="bi bi-pencil"></i> Edit Details
+            <i class="bi bi-pencil"></i> <?= lang('App.edit') ?>
         </a>
         <button type="button" onclick="openModal('modal-assign-provider')"
                 class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 shadow-2xs transition">
-            <i class="bi bi-person-plus-fill"></i> Assign Provider
+            <i class="bi bi-person-plus-fill"></i> <?= lang('App.assign_provider') ?>
         </button>
         <button type="button" onclick="openModal('modal-delete-event')"
-                class="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold text-rose-600 bg-rose-50 border border-rose-200 rounded-lg hover:bg-rose-100 transition" title="Delete Event">
+                class="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold text-rose-600 bg-rose-50 border border-rose-200 rounded-lg hover:bg-rose-100 transition" title="<?= lang('App.delete_event') ?>">
             <i class="bi bi-trash"></i>
         </button>
     </div>
@@ -30,8 +30,15 @@
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
         <div class="lg:col-span-8">
             <div class="flex flex-wrap items-center gap-2 mb-3">
+                <?php
+                    $typeKey = 'App.type_' . $event['event_type'];
+                    $translatedType = lang($typeKey);
+                    if ($translatedType === $typeKey) {
+                        $translatedType = ucfirst($event['event_type']);
+                    }
+                ?>
                 <span class="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-indigo-50 text-indigo-700 border border-indigo-200">
-                    <?= esc($event['event_type']) ?>
+                    <?= esc($translatedType) ?>
                 </span>
 
                 <?php
@@ -45,16 +52,22 @@
                     ];
                     $badgeClass = $statusClasses[$event['status']] ?? 'bg-slate-100 text-slate-700';
 
+                    $statusKey = 'App.status_' . $event['status'];
+                    $translatedStatus = lang($statusKey);
+                    if ($translatedStatus === $statusKey) {
+                        $translatedStatus = ucwords(str_replace('_', ' ', $event['status']));
+                    }
+
                     $eventDate = new DateTime($event['event_date']);
                     $today = new DateTime('today');
                     $diff = (int) $today->diff($eventDate)->format('%r%a');
                 ?>
-                <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold border <?= $badgeClass ?> capitalize">
-                    <?= esc(str_replace('_', ' ', $event['status'])) ?>
+                <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold border <?= $badgeClass ?>">
+                    <?= esc($translatedStatus) ?>
                 </span>
 
                 <?php if ($diff === 0): ?>
-                    <span class="px-2 py-0.5 rounded-full text-xs font-bold bg-rose-600 text-white">Event is Today!</span>
+                    <span class="px-2 py-0.5 rounded-full text-xs font-bold bg-rose-600 text-white">Today!</span>
                 <?php elseif ($diff > 0): ?>
                     <span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-600 border border-slate-200">In <?= $diff ?> days</span>
                 <?php else: ?>
@@ -79,11 +92,11 @@
                 <?php endif; ?>
                 <div class="flex items-center gap-1.5">
                     <i class="bi bi-geo-alt-fill text-rose-500 text-sm"></i>
-                    <span><?= esc($event['location_venue'] ?? 'Venue To Be Announced') ?></span>
+                    <span><?= esc($event['location_venue'] ?? lang('App.venue_tba')) ?></span>
                 </div>
                 <div class="flex items-center gap-1.5">
                     <i class="bi bi-people-fill text-sky-500 text-sm"></i>
-                    <span><?= esc($event['guest_count']) ?> Expected Guests</span>
+                    <span><?= esc($event['guest_count']) ?> <?= lang('App.expected_guests') ?></span>
                 </div>
             </div>
 
@@ -98,7 +111,7 @@
         <div class="lg:col-span-4">
             <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80">
                 <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2 flex items-center gap-1.5">
-                    <i class="bi bi-person-badge text-indigo-600"></i> Client Details
+                    <i class="bi bi-person-badge text-indigo-600"></i> <?= lang('App.client_info') ?>
                 </h4>
                 <div class="font-bold text-slate-900 text-base mb-2"><?= esc($event['client_name']) ?></div>
                 <div class="space-y-1.5 text-xs text-slate-600">
@@ -117,7 +130,7 @@
                 </div>
                 <?php if (!empty($event['notes'])): ?>
                     <div class="mt-3 pt-3 border-t border-slate-200 text-xs text-slate-500">
-                        <strong class="text-slate-700">Notes:</strong> <?= esc($event['notes']) ?>
+                        <strong class="text-slate-700"><?= lang('App.notes') ?>:</strong> <?= esc($event['notes']) ?>
                     </div>
                 <?php endif; ?>
             </div>
@@ -130,16 +143,16 @@
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pb-4 mb-5 border-b border-slate-100">
         <div class="flex items-center gap-2">
             <i class="bi bi-cash-stack text-emerald-600 text-lg"></i>
-            <h2 class="text-base font-bold text-slate-900">Financial Tracker & Budget Variance</h2>
+            <h2 class="text-base font-bold text-slate-900"><?= lang('App.financial_breakdown') ?></h2>
         </div>
         <div>
             <?php if ($event['budget_variance'] < 0): ?>
                 <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200">
-                    <i class="bi bi-exclamation-triangle-fill"></i> Over Budget by $<?= number_format(abs($event['budget_variance']), 2) ?>
+                    <i class="bi bi-exclamation-triangle-fill"></i> <?= lang('App.over_budget_banner', [number_format(abs($event['budget_variance']), 2)]) ?>
                 </span>
             <?php else: ?>
                 <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                    <i class="bi bi-check-circle-fill"></i> Within Budget: $<?= number_format($event['budget_variance'], 2) ?> remaining
+                    <i class="bi bi-check-circle-fill"></i> <?= lang('App.within_budget_banner', [number_format($event['budget_variance'], 2)]) ?>
                 </span>
             <?php endif; ?>
         </div>
@@ -148,29 +161,25 @@
     <!-- 4 SUMMARY CARDS -->
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-5 text-center">
         <div class="p-4 bg-slate-50 rounded-xl border border-slate-200/80">
-            <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Target Budget</span>
+            <span class="text-xs font-bold uppercase tracking-wider text-slate-400"><?= lang('App.budget_allocated') ?></span>
             <h3 class="text-2xl font-extrabold text-slate-900 mt-1">$<?= number_format($event['budget'], 2) ?></h3>
-            <span class="text-[11px] text-slate-500 mt-0.5 block">Approved budget</span>
         </div>
 
         <div class="p-4 bg-slate-50 rounded-xl border border-slate-200/80">
-            <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Committed Costs</span>
+            <span class="text-xs font-bold uppercase tracking-wider text-slate-400"><?= lang('App.total_committed_cost') ?></span>
             <h3 class="text-2xl font-extrabold mt-1 <?= $event['budget_variance'] < 0 ? 'text-rose-600' : 'text-indigo-600' ?>">
                 $<?= number_format($event['total_provider_cost'], 2) ?>
             </h3>
-            <span class="text-[11px] text-slate-500 mt-0.5 block"><?= count($assignedProviders) ?> providers hired</span>
         </div>
 
         <div class="p-4 bg-slate-50 rounded-xl border border-slate-200/80">
-            <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Deposits Paid</span>
+            <span class="text-xs font-bold uppercase tracking-wider text-slate-400"><?= lang('App.deposits_paid') ?></span>
             <h3 class="text-2xl font-extrabold text-emerald-600 mt-1">$<?= number_format($event['total_deposit_paid'], 2) ?></h3>
-            <span class="text-[11px] text-slate-500 mt-0.5 block">Cleared payments</span>
         </div>
 
         <div class="p-4 bg-slate-50 rounded-xl border border-slate-200/80">
-            <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Unpaid Balance</span>
+            <span class="text-xs font-bold uppercase tracking-wider text-slate-400"><?= lang('App.remaining_balance') ?></span>
             <h3 class="text-2xl font-extrabold text-amber-600 mt-1">$<?= number_format($event['remaining_balance'], 2) ?></h3>
-            <span class="text-[11px] text-slate-500 mt-0.5 block">Remaining vendor dues</span>
         </div>
     </div>
 
@@ -197,24 +206,24 @@
         <div class="px-6 py-4 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3">
             <div class="flex items-center gap-2">
                 <i class="bi bi-people-fill text-indigo-600 text-lg"></i>
-                <h2 class="text-base font-bold text-slate-900">Assigned Service Providers</h2>
+                <h2 class="text-base font-bold text-slate-900"><?= lang('App.assigned_providers') ?></h2>
                 <span class="px-2 py-0.5 text-xs font-bold rounded-full bg-indigo-50 text-indigo-700">
                     <?= count($assignedProviders) ?>
                 </span>
             </div>
             <button type="button" onclick="openModal('modal-assign-provider')"
                     class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-2xs transition">
-                <i class="bi bi-plus-lg"></i> Assign Provider
+                <i class="bi bi-plus-lg"></i> <?= lang('App.assign_provider') ?>
             </button>
         </div>
 
         <?php if (empty($assignedProviders)): ?>
             <div class="text-center py-12 px-4">
                 <i class="bi bi-people text-4xl text-slate-300 block mb-2"></i>
-                <p class="text-sm font-medium text-slate-600 mb-3">No vendors assigned to this event yet.</p>
+                <p class="text-sm font-medium text-slate-600 mb-3"><?= lang('App.no_providers_assigned') ?></p>
                 <button type="button" onclick="openModal('modal-assign-provider')"
                         class="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 bg-indigo-600 text-white rounded-lg">
-                    Assign Catering, Venue, DJ, etc.
+                    <?= lang('App.assign_first_vendor') ?>
                 </button>
             </div>
         <?php else: ?>
@@ -222,14 +231,14 @@
                 <table class="w-full text-left border-collapse text-sm">
                     <thead class="bg-slate-50 text-slate-500 uppercase font-semibold text-[11px] tracking-wider border-b border-slate-100">
                         <tr>
-                            <th class="px-6 py-3.5">Category & Provider</th>
-                            <th class="px-4 py-3.5">Service Description</th>
-                            <th class="px-4 py-3.5">Agreed Fee</th>
-                            <th class="px-4 py-3.5">Deposit Paid</th>
-                            <th class="px-4 py-3.5">Balance</th>
-                            <th class="px-4 py-3.5">Payment</th>
+                            <th class="px-6 py-3.5"><?= lang('App.col_provider_category') ?></th>
+                            <th class="px-4 py-3.5"><?= lang('App.col_service_scope') ?></th>
+                            <th class="px-4 py-3.5"><?= lang('App.col_agreed_cost') ?></th>
+                            <th class="px-4 py-3.5"><?= lang('App.col_deposit') ?></th>
+                            <th class="px-4 py-3.5"><?= lang('App.col_balance') ?></th>
+                            <th class="px-4 py-3.5"><?= lang('App.col_deposit_status') ?></th>
                             <th class="px-4 py-3.5">Contract</th>
-                            <th class="px-6 py-3.5 text-right">Actions</th>
+                            <th class="px-6 py-3.5 text-right"><?= lang('App.actions') ?></th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100 text-slate-700">
@@ -410,14 +419,14 @@
         <div class="flex flex-wrap items-center justify-between gap-3 pb-4 mb-4 border-b border-slate-100">
             <div class="flex items-center gap-2">
                 <i class="bi bi-check2-circle text-emerald-600 text-lg"></i>
-                <h2 class="text-base font-bold text-slate-900">Checklist & Milestone Tasks</h2>
-                <span id="task-counter-badge" class="px-2.5 py-0.5 text-xs font-bold rounded-full bg-emerald-50 text-emerald-700">
-                    <?= $event['completed_tasks'] ?> / <?= $event['total_tasks'] ?> Done (<?= $event['task_percentage'] ?>%)
+                <h2 class="text-base font-bold text-slate-900"><?= lang('App.checklist_milestones') ?></h2>
+                <span id="task-counter-badge" data-done-text="<?= lang('App.done') ?>" class="px-2.5 py-0.5 text-xs font-bold rounded-full bg-emerald-50 text-emerald-700">
+                    <?= $event['completed_tasks'] ?> / <?= $event['total_tasks'] ?> <?= lang('App.done') ?> (<?= $event['task_percentage'] ?>%)
                 </span>
             </div>
             <button type="button" onclick="openModal('modal-add-task')"
                     class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 shadow-2xs transition">
-                <i class="bi bi-plus-lg"></i> Add Task
+                <i class="bi bi-plus-lg"></i> <?= lang('App.add_task') ?>
             </button>
         </div>
 
@@ -430,10 +439,10 @@
         <?php if (empty($tasks)): ?>
             <div class="text-center py-8">
                 <i class="bi bi-card-checklist text-3xl text-slate-300 block mb-2"></i>
-                <p class="text-sm font-medium text-slate-500 mb-2">No tasks added to the checklist yet.</p>
+                <p class="text-sm font-medium text-slate-500 mb-2"><?= lang('App.no_tasks_added') ?></p>
                 <button type="button" onclick="openModal('modal-add-task')"
                         class="text-xs font-semibold text-indigo-600 hover:text-indigo-800">
-                    Add first milestone &rarr;
+                    <?= lang('App.add_first_milestone') ?>
                 </button>
             </div>
         <?php else: ?>
@@ -457,22 +466,22 @@
                                         </span>
                                     <?php endif; ?>
                                     <?php if ($task['due_date']): ?>
-                                        <span><i class="bi bi-calendar-event mr-1 text-slate-400"></i>Due <?= date('M j, Y', strtotime($task['due_date'])) ?></span>
+                                        <span><i class="bi bi-calendar-event mr-1 text-slate-400"></i><?= lang('App.due') ?> <?= date('M j, Y', strtotime($task['due_date'])) ?></span>
                                     <?php endif; ?>
                                     <?php if ($task['priority'] === 'high'): ?>
-                                        <span class="px-1.5 py-0.2 rounded bg-rose-50 text-rose-600 font-bold text-[10px]">High</span>
+                                        <span class="px-1.5 py-0.2 rounded bg-rose-50 text-rose-600 font-bold text-[10px]"><?= lang('App.priority_high') ?></span>
                                     <?php elseif ($task['priority'] === 'medium'): ?>
-                                        <span class="px-1.5 py-0.2 rounded bg-amber-50 text-amber-700 font-semibold text-[10px]">Medium</span>
+                                        <span class="px-1.5 py-0.2 rounded bg-amber-50 text-amber-700 font-semibold text-[10px]"><?= lang('App.priority_medium') ?></span>
                                     <?php else: ?>
-                                        <span class="px-1.5 py-0.2 rounded bg-slate-100 text-slate-500 text-[10px]">Low</span>
+                                        <span class="px-1.5 py-0.2 rounded bg-slate-100 text-slate-500 text-[10px]"><?= lang('App.priority_low') ?></span>
                                     <?php endif; ?>
                                 </div>
                             </div>
                         </div>
 
-                        <form method="post" action="<?= site_url('events/' . $event['id'] . '/tasks/' . $task['id'] . '/delete') ?>" onsubmit="return confirm('Delete this task?');">
+                        <form method="post" action="<?= site_url('events/' . $event['id'] . '/tasks/' . $task['id'] . '/delete') ?>" onsubmit="return confirm('<?= esc(lang('App.delete_task_confirm'), 'js') ?>');">
                             <?= csrf_field() ?>
-                            <button type="submit" class="p-1 text-slate-300 hover:text-rose-600 transition" title="Delete Task">
+                            <button type="submit" class="p-1 text-slate-300 hover:text-rose-600 transition" title="<?= lang('App.delete') ?>">
                                 <i class="bi bi-trash"></i>
                             </button>
                         </form>
@@ -489,7 +498,7 @@
         <form method="post" action="<?= site_url('events/' . $event['id'] . '/providers') ?>">
             <?= csrf_field() ?>
             <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
-                <h3 class="text-base font-bold text-slate-900">Assign Provider to Event</h3>
+                <h3 class="text-base font-bold text-slate-900"><?= lang('App.modal_assign_title') ?></h3>
                 <button type="button" onclick="closeModal('modal-assign-provider')" class="text-slate-400 hover:text-slate-600">
                     <i class="bi bi-x-lg"></i>
                 </button>
@@ -498,34 +507,34 @@
             <div class="space-y-4 text-sm">
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                        Select Provider <span class="text-rose-500">*</span>
+                        <?= lang('App.select_provider') ?> <span class="text-rose-500">*</span>
                     </label>
                     <select name="provider_id" required
                             class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:border-indigo-500 transition">
-                        <option value="">-- Choose a Provider --</option>
+                        <option value=""><?= lang('App.choose_provider') ?></option>
                         <?php foreach ($allProviders as $prov): ?>
                             <option value="<?= $prov['id'] ?>">
                                 <?= esc($prov['name']) ?> (<?= esc($prov['category_name'] ?? 'General') ?>) - <?= esc($prov['price_range']) ?>
                             </option>
                         <?php endforeach; ?>
                     </select>
-                    <p class="text-[11px] text-slate-400 mt-1">Need a new vendor? <a href="<?= site_url('providers/new') ?>" target="_blank" class="text-indigo-600 font-semibold">Register in directory</a></p>
+                    <p class="text-[11px] text-slate-400 mt-1"><?= lang('App.need_new_vendor') ?> <a href="<?= site_url('providers/new') ?>" target="_blank" class="text-indigo-600 font-semibold"><?= lang('App.register_directory') ?></a></p>
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Service Description / Scope</label>
-                    <input type="text" name="service_description" placeholder="e.g. 5-hour DJ set & sound system"
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1"><?= lang('App.service_description') ?></label>
+                    <input type="text" name="service_description" placeholder="<?= lang('App.service_description_placeholder') ?>"
                            class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:border-indigo-500 transition">
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Agreed Fee / Cost ($)</label>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1"><?= lang('App.agreed_cost') ?></label>
                         <input type="number" step="0.01" min="0" name="agreed_cost" placeholder="1500.00" value="0.00"
                                class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:border-indigo-500 transition">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Deposit Paid ($)</label>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1"><?= lang('App.deposit_paid') ?></label>
                         <input type="number" step="0.01" min="0" name="deposit_paid" placeholder="500.00" value="0.00"
                                class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:border-indigo-500 transition">
                     </div>
@@ -533,11 +542,11 @@
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Payment Status</label>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1"><?= lang('App.col_deposit_status') ?></label>
                         <select name="payment_status" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:border-indigo-500 transition">
-                            <option value="pending">Pending</option>
-                            <option value="partial">Partial Deposit</option>
-                            <option value="paid">Paid in Full</option>
+                            <option value="pending"><?= lang('App.status_unpaid') ?></option>
+                            <option value="partial"><?= lang('App.status_partial') ?></option>
+                            <option value="paid"><?= lang('App.status_paid_full') ?></option>
                         </select>
                     </div>
                     <div>
@@ -551,8 +560,8 @@
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Notes / Terms</label>
-                    <textarea name="notes" rows="2" placeholder="Setup time, equipment requests, parking..."
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1"><?= lang('App.assignment_notes') ?></label>
+                    <textarea name="notes" rows="2" placeholder="<?= lang('App.assignment_notes_placeholder') ?>"
                               class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:border-indigo-500 transition"></textarea>
                 </div>
             </div>
@@ -560,10 +569,10 @@
             <div class="flex items-center justify-end gap-2.5 mt-6 pt-4 border-t border-slate-100">
                 <button type="button" onclick="closeModal('modal-assign-provider')"
                         class="px-4 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition">
-                    Cancel
+                    <?= lang('App.cancel') ?>
                 </button>
                 <button type="submit" class="px-4 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl transition">
-                    Assign Provider
+                    <?= lang('App.assign_button') ?>
                 </button>
             </div>
         </form>
@@ -576,7 +585,7 @@
         <form method="post" action="<?= site_url('events/' . $event['id'] . '/tasks') ?>">
             <?= csrf_field() ?>
             <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
-                <h3 class="text-base font-bold text-slate-900">Add Milestone Task</h3>
+                <h3 class="text-base font-bold text-slate-900"><?= lang('App.modal_add_task_title') ?></h3>
                 <button type="button" onclick="closeModal('modal-add-task')" class="text-slate-400 hover:text-slate-600">
                     <i class="bi bi-x-lg"></i>
                 </button>
@@ -585,16 +594,16 @@
             <div class="space-y-4 text-sm">
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                        Task Title <span class="text-rose-500">*</span>
+                        <?= lang('App.task_title') ?> <span class="text-rose-500">*</span>
                     </label>
-                    <input type="text" name="title" required placeholder="e.g. Confirm final tasting menu"
+                    <input type="text" name="title" required placeholder="<?= lang('App.task_title_placeholder') ?>"
                            class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:border-indigo-500 transition">
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Link to Provider (Optional)</label>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1"><?= lang('App.link_provider') ?></label>
                     <select name="provider_id" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:border-indigo-500 transition">
-                        <option value="">-- No specific vendor --</option>
+                        <option value=""><?= lang('App.none_general_task') ?></option>
                         <?php foreach ($assignedProviders as $ep): ?>
                             <option value="<?= $ep['provider_id'] ?>"><?= esc($ep['provider_name']) ?></option>
                         <?php endforeach; ?>
@@ -603,16 +612,16 @@
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Due Date</label>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1"><?= lang('App.due_date') ?></label>
                         <input type="date" name="due_date" value="<?= date('Y-m-d', strtotime('+7 days')) ?>"
                                class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:border-indigo-500 transition">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Priority</label>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1"><?= lang('App.priority') ?></label>
                         <select name="priority" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:border-indigo-500 transition">
-                            <option value="low">Low</option>
-                            <option value="medium" selected>Medium</option>
-                            <option value="high">High</option>
+                            <option value="low"><?= lang('App.priority_low') ?></option>
+                            <option value="medium" selected><?= lang('App.priority_medium') ?></option>
+                            <option value="high"><?= lang('App.priority_high') ?></option>
                         </select>
                     </div>
                 </div>
@@ -621,10 +630,10 @@
             <div class="flex items-center justify-end gap-2.5 mt-6 pt-4 border-t border-slate-100">
                 <button type="button" onclick="closeModal('modal-add-task')"
                         class="px-4 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition">
-                    Cancel
+                    <?= lang('App.cancel') ?>
                 </button>
                 <button type="submit" class="px-4 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl transition">
-                    Add Task
+                    <?= lang('App.add_task') ?>
                 </button>
             </div>
         </form>
@@ -642,19 +651,19 @@
                 <i class="bi bi-x-lg"></i>
             </button>
         </div>
-        <h3 class="text-lg font-bold text-slate-900">Delete Event?</h3>
+        <h3 class="text-lg font-bold text-slate-900"><?= lang('App.delete_event') ?>?</h3>
         <p class="text-sm text-slate-500 mt-2">
-            Are you sure you want to permanently delete <strong><?= esc($event['title']) ?></strong>? All assigned vendors and task records will also be removed.
+            <?= lang('App.delete_event_confirm', ['<strong>' . esc($event['title']) . '</strong>']) ?>
         </p>
         <div class="flex items-center justify-end gap-2.5 mt-6 pt-4 border-t border-slate-100">
             <button type="button" onclick="closeModal('modal-delete-event')"
                     class="px-4 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition">
-                Cancel
+                <?= lang('App.cancel') ?>
             </button>
             <form method="post" action="<?= site_url('events/' . $event['id'] . '/delete') ?>">
                 <?= csrf_field() ?>
                 <button type="submit" class="px-4 py-2 text-xs font-semibold text-white bg-rose-600 hover:bg-rose-700 rounded-xl transition">
-                    Yes, Delete Event
+                    <?= lang('App.yes_delete') ?>
                 </button>
             </form>
         </div>
