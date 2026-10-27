@@ -127,6 +127,10 @@
                             if ($translatedType === $typeKey) {
                                 $translatedType = ucfirst($evt['event_type']);
                             }
+
+                            $locale = service('request')->getLocale();
+                            $evtTime = \CodeIgniter\I18n\Time::parse($evt['event_date'], null, $locale);
+                            $formattedEvtDate = $evtTime->toLocalizedString(lang('App.date_format_medium'));
                         ?>
                         <tr class="hover:bg-slate-50/80 transition">
                             <td class="px-6 py-4">
@@ -139,7 +143,7 @@
                                 </div>
                             </td>
                             <td class="px-4 py-4 whitespace-nowrap">
-                                <div class="font-semibold text-slate-900"><?= date('M j, Y', strtotime($evt['event_date'])) ?></div>
+                                <div class="font-semibold text-slate-900"><?= esc($formattedEvtDate) ?></div>
                                 <div class="text-xs text-slate-500 mt-0.5">
                                     <?php if ($evt['start_time']): ?>
                                         <i class="bi bi-clock mr-1"></i><?= substr($evt['start_time'], 0, 5) ?><?= $evt['end_time'] ? ' - ' . substr($evt['end_time'], 0, 5) : '' ?>
@@ -163,19 +167,19 @@
                             </td>
                             <td class="px-4 py-4">
                                 <div class="flex items-center justify-between text-xs mb-1">
-                                    <span class="text-slate-500">Spent: <strong class="<?= $isOverBudget ? 'text-rose-600' : 'text-slate-800' ?>">$<?= number_format($evt['total_provider_cost'], 0) ?></strong></span>
-                                    <span class="text-slate-400">Budget: $<?= number_format($evt['budget'], 0) ?></span>
+                                    <span class="text-slate-500"><?= lang('App.spent') ?>: <strong class="<?= $isOverBudget ? 'text-rose-600' : 'text-slate-800' ?>">$<?= number_format($evt['total_provider_cost'], 0) ?></strong></span>
+                                    <span class="text-slate-400"><?= lang('App.budget') ?>: $<?= number_format($evt['budget'], 0) ?></span>
                                 </div>
                                 <div class="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
                                     <div class="<?= $barColor ?> h-1.5 rounded-full transition-all" style="width: <?= min($percentUsed, 100) ?>%"></div>
                                 </div>
                                 <div class="text-right text-[11px] mt-0.5 <?= $isOverBudget ? 'text-rose-600 font-bold' : 'text-slate-400' ?>">
-                                    <?= $percentUsed ?>% allocated
+                                    <?= lang('App.percent_allocated', [$percentUsed]) ?>
                                 </div>
                             </td>
                             <td class="px-4 py-4 whitespace-nowrap">
                                 <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 border border-slate-200 text-xs font-semibold">
-                                    <i class="bi bi-people-fill text-indigo-600"></i><?= esc($evt['provider_count']) ?> hired
+                                    <i class="bi bi-people-fill text-indigo-600"></i><?= lang('App.providers_hired', [esc($evt['provider_count'])]) ?>
                                 </span>
                             </td>
                             <td class="px-6 py-4 text-right whitespace-nowrap">

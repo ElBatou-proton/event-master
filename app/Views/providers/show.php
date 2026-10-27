@@ -28,17 +28,17 @@
             <div class="flex flex-wrap items-center gap-2 mb-3">
                 <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-100 text-xs font-bold text-slate-700">
                     <i class="bi <?= esc($provider['category_icon'] ?? 'bi-tag') ?> text-indigo-600"></i>
-                    <?= esc($provider['category_name'] ?? 'General Vendor') ?>
+                    <?= esc($provider['category_name'] ?? lang('App.general_vendor')) ?>
                 </span>
                 <span class="text-amber-500 text-xs font-bold tracking-wider">
                     <?= str_repeat('★', $provider['rating'] ?? 5) ?> (<?= $provider['rating'] ?>/5)
                 </span>
                 <span class="px-2 py-0.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                    <?= esc($provider['price_range']) ?> Tier
+                    <?= esc($provider['price_range']) ?> <?= lang('App.tier') ?>
                 </span>
                 <?php if ($provider['status'] === 'preferred'): ?>
                     <span class="px-2 py-0.5 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200">
-                        <i class="bi bi-award-fill mr-1"></i> Preferred Partner
+                        <i class="bi bi-award-fill mr-1"></i> <?= lang('App.preferred_partner') ?>
                     </span>
                 <?php endif; ?>
             </div>
@@ -64,7 +64,7 @@
 
             <?php if (!empty($provider['notes'])): ?>
                 <div class="mt-4 p-3 rounded-xl bg-slate-50 border-l-4 border-indigo-600 text-xs text-slate-600 leading-relaxed">
-                    <strong class="text-slate-800">Service Capabilities & Specs:</strong><br>
+                    <strong class="text-slate-800"><?= lang('App.service_capabilities_specs') ?></strong><br>
                     <?= nl2br(esc($provider['notes'])) ?>
                 </div>
             <?php endif; ?>
@@ -74,7 +74,7 @@
         <div class="lg:col-span-4">
             <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80">
                 <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-1.5">
-                    <i class="bi bi-chat-dots-fill text-indigo-600"></i> Direct Connect
+                    <i class="bi bi-chat-dots-fill text-indigo-600"></i> <?= lang('App.direct_connect') ?>
                 </h4>
                 <div class="flex flex-col gap-2">
                     <?php if ($provider['phone']): ?>
@@ -95,7 +95,7 @@
                         <a href="<?= esc($provider['website']) ?>" target="_blank" rel="noopener"
                            class="flex items-center gap-2.5 px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 hover:text-indigo-600 hover:border-indigo-200 transition shadow-2xs">
                             <i class="bi bi-globe text-indigo-600"></i>
-                            <span class="truncate">Visit Official Website</span>
+                            <span class="truncate"><?= lang('App.visit_website') ?></span>
                         </a>
                     <?php endif; ?>
                 </div>
@@ -123,8 +123,8 @@
             </span>
         </div>
         <div class="text-xs text-slate-500 font-medium">
-            Contracted Revenue: <strong class="text-slate-900">$<?= number_format($totalContracted, 2) ?></strong>
-            &bull; Cleared: <strong class="text-emerald-600">$<?= number_format($totalReceived, 2) ?></strong>
+            <?= lang('App.contracted_revenue') ?> <strong class="text-slate-900">$<?= number_format($totalContracted, 2) ?></strong>
+            &bull; <?= lang('App.cleared_deposits') ?> <strong class="text-emerald-600">$<?= number_format($totalReceived, 2) ?></strong>
         </div>
     </div>
 
@@ -147,19 +147,47 @@
                         <th class="px-4 py-3.5"><?= lang('App.col_agreed_cost') ?></th>
                         <th class="px-4 py-3.5"><?= lang('App.col_deposit') ?></th>
                         <th class="px-4 py-3.5"><?= lang('App.col_deposit_status') ?></th>
-                        <th class="px-4 py-3.5">Contract</th>
+                        <th class="px-4 py-3.5"><?= lang('App.col_contract') ?></th>
                         <th class="px-6 py-3.5 text-right"><?= lang('App.actions') ?></th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100 text-slate-700">
                     <?php foreach ($bookedEvents as $bev): ?>
                         <?php
+                            $locale = service('request')->getLocale();
+                            $bevDate = \CodeIgniter\I18n\Time::parse($bev['event_date'], null, $locale);
+                            $formattedBevDate = $bevDate->toLocalizedString(lang('App.date_format_medium'));
+
                             $payBadge = [
                                 'paid'    => 'bg-emerald-50 text-emerald-700 border-emerald-200',
                                 'partial' => 'bg-amber-50 text-amber-700 border-amber-200',
                                 'pending' => 'bg-rose-50 text-rose-700 border-rose-200',
                             ];
                             $payClass = $payBadge[$bev['payment_status']] ?? 'bg-slate-100 text-slate-700';
+
+                            $payKey = 'App.payment_' . $bev['payment_status'];
+                            $translatedPayment = lang($payKey);
+                            if ($translatedPayment === $payKey) {
+                                $translatedPayment = ucfirst($bev['payment_status']);
+                            }
+
+                            $contractKey = 'App.contract_' . $bev['contract_status'];
+                            $translatedContract = lang($contractKey);
+                            if ($translatedContract === $contractKey) {
+                                $translatedContract = ucfirst($bev['contract_status']);
+                            }
+
+                            $typeKey = 'App.type_' . $bev['event_type'];
+                            $translatedType = lang($typeKey);
+                            if ($translatedType === $typeKey) {
+                                $translatedType = ucfirst($bev['event_type']);
+                            }
+
+                            $statusKey = 'App.status_' . $bev['event_status'];
+                            $translatedStatus = lang($statusKey);
+                            if ($translatedStatus === $statusKey) {
+                                $translatedStatus = ucwords(str_replace('_', ' ', $bev['event_status']));
+                            }
                         ?>
                         <tr class="hover:bg-slate-50/80 transition">
                             <td class="px-6 py-4">
@@ -168,15 +196,15 @@
                                 </a>
                                 <div class="text-xs text-slate-500 mt-0.5">
                                     <i class="bi bi-person mr-1"></i><?= esc($bev['client_name']) ?>
-                                    <span class="inline-block px-1.5 py-0.2 rounded bg-slate-100 text-slate-600 text-[10px] font-semibold border border-slate-200 capitalize ms-1"><?= esc($bev['event_type']) ?></span>
+                                    <span class="inline-block px-1.5 py-0.2 rounded bg-slate-100 text-slate-600 text-[10px] font-semibold border border-slate-200 ms-1"><?= esc($translatedType) ?></span>
                                 </div>
                             </td>
                             <td class="px-4 py-4 whitespace-nowrap">
-                                <div class="font-semibold text-slate-900"><?= date('M j, Y', strtotime($bev['event_date'])) ?></div>
-                                <span class="text-[11px] text-slate-400 capitalize"><?= esc(str_replace('_', ' ', $bev['event_status'])) ?></span>
+                                <div class="font-semibold text-slate-900"><?= esc($formattedBevDate) ?></div>
+                                <span class="text-[11px] text-slate-400"><?= esc($translatedStatus) ?></span>
                             </td>
                             <td class="px-4 py-4">
-                                <div class="text-xs font-medium text-slate-800"><?= esc($bev['service_description'] ?? 'Event Services') ?></div>
+                                <div class="text-xs font-medium text-slate-800"><?= esc($bev['service_description'] ?: lang('App.service_default_desc')) ?></div>
                                 <?php if (!empty($bev['notes'])): ?>
                                     <div class="text-[11px] text-slate-400 truncate max-w-[200px]" title="<?= esc($bev['notes']) ?>"><?= esc($bev['notes']) ?></div>
                                 <?php endif; ?>
@@ -188,19 +216,19 @@
                                 $<?= number_format($bev['deposit_paid'], 2) ?>
                             </td>
                             <td class="px-4 py-4 whitespace-nowrap">
-                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold border <?= $payClass ?> capitalize">
-                                    <?= esc($bev['payment_status']) ?>
+                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold border <?= $payClass ?>">
+                                    <?= esc($translatedPayment) ?>
                                 </span>
                             </td>
                             <td class="px-4 py-4 whitespace-nowrap">
-                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium bg-slate-100 text-slate-600 border border-slate-200 capitalize">
-                                    <?= esc($bev['contract_status']) ?>
+                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium bg-slate-100 text-slate-600 border border-slate-200">
+                                    <i class="bi bi-file-earmark-text text-[10px]"></i> <?= esc($translatedContract) ?>
                                 </span>
                             </td>
                             <td class="px-6 py-4 text-right whitespace-nowrap">
                                 <a href="<?= site_url('events/' . $bev['event_id']) ?>"
                                    class="inline-flex items-center gap-1 px-3 py-1 text-xs font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition">
-                                    View Event &rarr;
+                                    <?= lang('App.view_event') ?> &rarr;
                                 </a>
                             </td>
                         </tr>

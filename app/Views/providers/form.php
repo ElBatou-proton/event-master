@@ -70,10 +70,10 @@
                             class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition">
                         <?php
                             $ranges = [
-                                '$'    => '$ (Budget Friendly)',
-                                '$$'   => '$$ (Moderate / Standard)',
-                                '$$$'  => '$$$ (Premium / High End)',
-                                '$$$$' => '$$$$ (Luxury / Ultra Exclusive)',
+                                '$'    => lang('App.tier_budget'),
+                                '$$'   => lang('App.tier_moderate'),
+                                '$$$'  => lang('App.tier_premium'),
+                                '$$$$' => lang('App.tier_luxury'),
                             ];
                             $selectedPrice = old('price_range', $provider['price_range'] ?? '$$');
                         ?>
@@ -90,11 +90,11 @@
                     <select name="rating"
                             class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition">
                         <?php $selectedRating = (int) old('rating', $provider['rating'] ?? 5); ?>
-                        <option value="5" <?= $selectedRating === 5 ? 'selected' : '' ?>>★★★★★ (5 Stars)</option>
-                        <option value="4" <?= $selectedRating === 4 ? 'selected' : '' ?>>★★★★☆ (4 Stars)</option>
-                        <option value="3" <?= $selectedRating === 3 ? 'selected' : '' ?>>★★★☆☆ (3 Stars)</option>
-                        <option value="2" <?= $selectedRating === 2 ? 'selected' : '' ?>>★★☆☆☆ (2 Stars)</option>
-                        <option value="1" <?= $selectedRating === 1 ? 'selected' : '' ?>>★☆☆☆☆ (1 Star)</option>
+                        <option value="5" <?= $selectedRating === 5 ? 'selected' : '' ?>>★★★★★ (<?= lang('App.stars_count', [5]) ?>)</option>
+                        <option value="4" <?= $selectedRating === 4 ? 'selected' : '' ?>>★★★★☆ (<?= lang('App.stars_count', [4]) ?>)</option>
+                        <option value="3" <?= $selectedRating === 3 ? 'selected' : '' ?>>★★★☆☆ (<?= lang('App.stars_count', [3]) ?>)</option>
+                        <option value="2" <?= $selectedRating === 2 ? 'selected' : '' ?>>★★☆☆☆ (<?= lang('App.stars_count', [2]) ?>)</option>
+                        <option value="1" <?= $selectedRating === 1 ? 'selected' : '' ?>>★☆☆☆☆ (<?= lang('App.star_single') ?>)</option>
                     </select>
                 </div>
 
@@ -106,9 +106,9 @@
                             class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition">
                         <?php
                             $statuses = [
-                                'preferred' => 'Preferred Vendor',
-                                'active'    => 'Active',
-                                'inactive'  => 'Inactive / Unavailable',
+                                'preferred' => lang('App.status_preferred_vendor'),
+                                'active'    => lang('App.status_active'),
+                                'inactive'  => lang('App.status_inactive'),
                             ];
                             $selectedStatus = old('status', $provider['status'] ?? 'active');
                         ?>
@@ -123,23 +123,23 @@
         <!-- SECTION 2: CONTACT INFORMATION -->
         <div>
             <h3 class="text-base font-bold text-slate-900 flex items-center gap-2 pb-3 border-b border-slate-100">
-                <i class="bi bi-person-lines-fill text-indigo-600"></i> Contact Information
+                <i class="bi bi-person-lines-fill text-indigo-600"></i> <?= lang('App.contact_information') ?>
             </h3>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-5 mt-5">
                 <div class="lg:col-span-6">
                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                        Primary Contact Person
+                        <?= lang('App.contact_person') ?>
                     </label>
                     <input type="text" name="contact_person"
-                           placeholder="e.g. Chef Marcus Rivera"
+                           placeholder="<?= lang('App.contact_person_placeholder') ?>"
                            value="<?= old('contact_person', $provider['contact_person'] ?? '') ?>"
                            class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition">
                 </div>
 
                 <div class="lg:col-span-6">
                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                        Email Address
+                        <?= lang('App.email') ?>
                     </label>
                     <input type="email" name="email"
                            placeholder="booking@provider.com"
@@ -149,7 +149,7 @@
 
                 <div class="lg:col-span-6">
                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                        Phone Number
+                        <?= lang('App.phone') ?>
                     </label>
                     <input type="text" name="phone"
                            placeholder="+1 (555) 123-4567"
@@ -159,7 +159,7 @@
 
                 <div class="lg:col-span-6">
                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                        Website or Social Page
+                        <?= lang('App.website') ?>
                     </label>
                     <input type="url" name="website"
                            placeholder="https://provider.com"
@@ -169,20 +169,20 @@
 
                 <div class="lg:col-span-8">
                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                        Street Address / Base Headquarters
+                        <?= lang('App.street_address') ?>
                     </label>
                     <input type="text" name="address"
-                           placeholder="742 Evergreen Terrace, Suite 100"
+                           placeholder="<?= lang('App.street_address_placeholder') ?>"
                            value="<?= old('address', $provider['address'] ?? '') ?>"
                            class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition">
                 </div>
 
                 <div class="lg:col-span-4">
                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                        City / Service Area
+                        <?= lang('App.city_service_area') ?>
                     </label>
                     <input type="text" name="city"
-                           placeholder="Springfield"
+                           placeholder="<?= lang('App.city_placeholder') ?>"
                            value="<?= old('city', $provider['city'] ?? '') ?>"
                            class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition">
                 </div>
@@ -192,15 +192,15 @@
         <!-- SECTION 3: NOTES & SPECIALTIES -->
         <div>
             <h3 class="text-base font-bold text-slate-900 flex items-center gap-2 pb-3 border-b border-slate-100">
-                <i class="bi bi-file-text text-indigo-600"></i> Service Capabilities & Specialties
+                <i class="bi bi-file-text text-indigo-600"></i> <?= lang('App.service_capabilities_specialties') ?>
             </h3>
 
             <div class="mt-5">
                 <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                    Specialties, Dietary options, DJ genres, Sound gear details
+                    <?= lang('App.specialties_label') ?>
                 </label>
                 <textarea name="notes" rows="4"
-                          placeholder="Include dietary capability (vegan, halal, kosher), DJ equipment, venue load-in specs, cancellation policies..."
+                          placeholder="<?= lang('App.specialties_placeholder') ?>"
                           class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition"><?= old('notes', $provider['notes'] ?? '') ?></textarea>
             </div>
         </div>

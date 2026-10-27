@@ -92,11 +92,11 @@
                     <div class="flex items-center justify-between gap-2 mb-3">
                         <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-100 text-xs font-bold text-slate-700">
                             <i class="bi <?= esc($prov['category_icon'] ?? 'bi-tag') ?> text-indigo-600"></i>
-                            <?= esc($prov['category_name'] ?? 'General') ?>
+                            <?= esc($prov['category_name'] ?? lang('App.category_general')) ?>
                         </span>
                         <div class="flex items-center gap-2">
                             <?php if ($prov['status'] === 'preferred'): ?>
-                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">Preferred</span>
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200"><?= lang('App.preferred') ?></span>
                             <?php endif; ?>
                             <span class="text-amber-500 text-xs font-bold tracking-wider">
                                 <?= str_repeat('★', $prov['rating'] ?? 5) ?>
@@ -144,7 +144,7 @@
                         <?php if ($prov['website']): ?>
                             <div class="flex items-center gap-2 truncate">
                                 <i class="bi bi-globe text-indigo-600"></i>
-                                <a href="<?= esc($prov['website']) ?>" target="_blank" rel="noopener" class="text-slate-700 hover:text-indigo-600 font-medium">Website</a>
+                                <a href="<?= esc($prov['website']) ?>" target="_blank" rel="noopener" class="text-slate-700 hover:text-indigo-600 font-medium"><?= lang('App.website') ?></a>
                             </div>
                         <?php endif; ?>
                     </div>
@@ -152,7 +152,7 @@
 
                 <!-- FOOTER -->
                 <div class="flex items-center justify-between pt-4 mt-4 border-t border-slate-100">
-                    <span class="text-xs font-extrabold text-emerald-600"><?= esc($prov['price_range'] ?? '$$') ?> Tier</span>
+                    <span class="text-xs font-extrabold text-emerald-600"><?= esc($prov['price_range'] ?? '$$') ?> <?= lang('App.tier') ?></span>
                     <div class="flex items-center gap-1.5">
                         <a href="<?= site_url('providers/' . $prov['id']) ?>"
                            class="px-2.5 py-1 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition">

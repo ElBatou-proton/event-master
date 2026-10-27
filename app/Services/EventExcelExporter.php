@@ -187,7 +187,7 @@ class EventExcelExporter
             'H3' => lang('App.col_deposit'),
             'I3' => lang('App.col_balance'),
             'J3' => lang('App.col_deposit_status'),
-            'K3' => 'Contract',
+            'K3' => lang('App.col_contract'),
         ];
 
         foreach ($provHeaders as $cell => $headerText) {
@@ -206,8 +206,20 @@ class EventExcelExporter
                 $depositPaid = (float) ($ep['deposit_paid'] ?? 0);
                 $balance     = $agreedCost - $depositPaid;
 
+                $payKey = 'App.payment_' . ($ep['payment_status'] ?? 'pending');
+                $payText = lang($payKey);
+                if ($payText === $payKey) {
+                    $payText = ucfirst($ep['payment_status'] ?? 'pending');
+                }
+
+                $contractKey = 'App.contract_' . ($ep['contract_status'] ?? 'draft');
+                $contractText = lang($contractKey);
+                if ($contractText === $contractKey) {
+                    $contractText = ucfirst($ep['contract_status'] ?? 'draft');
+                }
+
                 $sheetProviders->setCellValue("A{$pRow}", $ep['provider_name'] ?? '');
-                $sheetProviders->setCellValue("B{$pRow}", $ep['category_name'] ?? 'General');
+                $sheetProviders->setCellValue("B{$pRow}", $ep['category_name'] ?? lang('App.category_general'));
                 $sheetProviders->setCellValue("C{$pRow}", $ep['contact_person'] ?? '');
                 $sheetProviders->setCellValue("D{$pRow}", $ep['provider_phone'] ?? '');
                 $sheetProviders->setCellValue("E{$pRow}", $ep['provider_email'] ?? '');
@@ -215,8 +227,8 @@ class EventExcelExporter
                 $sheetProviders->setCellValue("G{$pRow}", $agreedCost);
                 $sheetProviders->setCellValue("H{$pRow}", $depositPaid);
                 $sheetProviders->setCellValue("I{$pRow}", $balance);
-                $sheetProviders->setCellValue("J{$pRow}", ucfirst($ep['payment_status'] ?? 'pending'));
-                $sheetProviders->setCellValue("K{$pRow}", ucfirst($ep['contract_status'] ?? 'draft'));
+                $sheetProviders->setCellValue("J{$pRow}", $payText);
+                $sheetProviders->setCellValue("K{$pRow}", $contractText);
 
                 // Number formatting for currency columns
                 $sheetProviders->getStyle("G{$pRow}:I{$pRow}")->getNumberFormat()->setFormatCode('$#,##0.00');
@@ -287,7 +299,7 @@ class EventExcelExporter
         if (!empty($tasks)) {
             foreach ($tasks as $task) {
                 $isCompleted = ($task['status'] === 'completed');
-                $statusText  = $isCompleted ? lang('App.status_completed') : 'To Do';
+                $statusText  = $isCompleted ? lang('App.status_completed') : lang('App.task_todo');
 
                 $priorityKey = 'App.priority_' . ($task['priority'] ?? 'medium');
                 $priorityText = lang($priorityKey);

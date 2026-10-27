@@ -126,6 +126,9 @@
                                     $eventDate = new DateTime($evt['event_date']);
                                     $today = new DateTime('today');
                                     $daysLeft = (int) $today->diff($eventDate)->format('%r%a');
+                                    $locale = service('request')->getLocale();
+                                    $evtTime = \CodeIgniter\I18n\Time::parse($evt['event_date'], null, $locale);
+                                    $formattedEvtDate = $evtTime->toLocalizedString(lang('App.date_format_medium'));
 
                                     // Status colors
                                     $statusClasses = [
@@ -161,14 +164,14 @@
                                         </div>
                                     </td>
                                     <td class="px-4 py-4 whitespace-nowrap">
-                                        <div class="font-semibold text-slate-900"><?= $eventDate->format('M j, Y') ?></div>
+                                        <div class="font-semibold text-slate-900"><?= esc($formattedEvtDate) ?></div>
                                         <div class="text-xs mt-0.5">
                                             <?php if ($daysLeft === 0): ?>
-                                                <span class="font-bold text-rose-600">Today!</span>
+                                                <span class="font-bold text-rose-600"><?= lang('App.time_today') ?></span>
                                             <?php elseif ($daysLeft > 0): ?>
-                                                <span class="font-semibold text-indigo-600">In <?= $daysLeft ?> days</span>
+                                                <span class="font-semibold text-indigo-600"><?= lang('App.time_in_days', [$daysLeft]) ?></span>
                                             <?php else: ?>
-                                                <span class="text-slate-400"><?= abs($daysLeft) ?> days ago</span>
+                                                <span class="text-slate-400"><?= lang('App.time_days_ago', [abs($daysLeft)]) ?></span>
                                             <?php endif; ?>
                                             <?php if ($evt['start_time']): ?>
                                                 <span class="text-slate-400">&bull; <?= substr($evt['start_time'], 0, 5) ?></span>
@@ -241,7 +244,12 @@
                                                 <i class="bi bi-link-45deg"></i><?= esc($task['event_title']) ?>
                                             </a>
                                             <?php if ($task['due_date']): ?>
-                                                <span>&bull; <?= lang('App.due') ?> <?= date('M j', strtotime($task['due_date'])) ?></span>
+                                                <?php
+                                                    $taskLocale = service('request')->getLocale();
+                                                    $tTime = \CodeIgniter\I18n\Time::parse($task['due_date'], null, $taskLocale);
+                                                    $formattedTaskDue = $tTime->toLocalizedString(lang('App.date_format_medium'));
+                                                ?>
+                                                <span>&bull; <?= lang('App.due') ?> <?= esc($formattedTaskDue) ?></span>
                                             <?php endif; ?>
                                             <?php if ($task['priority'] === 'high'): ?>
                                                 <span class="px-1.5 py-0.2 rounded bg-rose-50 text-rose-600 font-bold text-[10px]"><?= lang('App.priority_high') ?></span>
@@ -285,7 +293,7 @@
                             <div class="flex items-start justify-between gap-2 mb-2">
                                 <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-xs font-bold text-slate-700 shadow-2xs">
                                     <i class="bi <?= esc($prov['category_icon'] ?? 'bi-tag') ?> text-indigo-600"></i>
-                                    <?= esc($prov['category_name'] ?? 'General') ?>
+                                    <?= esc($prov['category_name'] ?? lang('App.category_general')) ?>
                                 </span>
                                 <span class="text-amber-500 text-xs font-bold tracking-widest">
                                     <?= str_repeat('★', $prov['rating'] ?? 5) ?>
@@ -310,7 +318,7 @@
                         </div>
 
                         <div class="flex items-center justify-between pt-3 mt-3 border-t border-slate-200/80 text-xs">
-                            <span class="font-extrabold text-emerald-600"><?= esc($prov['price_range'] ?? '$$') ?> Tier</span>
+                            <span class="font-extrabold text-emerald-600"><?= esc($prov['price_range'] ?? '$$') ?> <?= lang('App.tier') ?></span>
                             <div class="flex items-center gap-3">
                                 <?php if ($prov['phone']): ?>
                                     <a href="tel:<?= esc($prov['phone']) ?>" class="text-slate-400 hover:text-indigo-600 text-sm" title="Call"><i class="bi bi-telephone"></i></a>
@@ -319,7 +327,7 @@
                                     <a href="mailto:<?= esc($prov['email']) ?>" class="text-slate-400 hover:text-indigo-600 text-sm" title="Email"><i class="bi bi-envelope"></i></a>
                                 <?php endif; ?>
                                 <a href="<?= site_url('providers/' . $prov['id']) ?>" class="font-semibold text-indigo-600 hover:text-indigo-800">
-                                    Profile &rarr;
+                                    <?= lang('App.view_profile') ?> &rarr;
                                 </a>
                             </div>
                         </div>

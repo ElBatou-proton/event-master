@@ -149,7 +149,7 @@
                         <?= lang('App.client_name') ?> <span class="text-rose-500">*</span>
                     </label>
                     <input type="text" name="client_name" required
-                           placeholder="e.g. Sarah Jenkins"
+                           placeholder="<?= lang('App.client_name_placeholder') ?>"
                            value="<?= old('client_name', $event['client_name'] ?? '') ?>"
                            class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition">
                 </div>

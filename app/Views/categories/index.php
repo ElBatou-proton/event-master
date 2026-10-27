@@ -33,9 +33,9 @@
                         </div>
                     </div>
                     <?php if ($cat['provider_count'] == 0): ?>
-                        <form method="post" action="<?= site_url('categories/' . $cat['id'] . '/delete') ?>" onsubmit="return confirm('Delete this empty category?');">
+                        <form method="post" action="<?= site_url('categories/' . $cat['id'] . '/delete') ?>" onsubmit="return confirm('<?= esc(lang('App.delete_category_confirm'), 'js') ?>');">
                             <?= csrf_field() ?>
-                            <button type="submit" class="p-1 text-slate-300 hover:text-rose-600 transition" title="Delete Category">
+                            <button type="submit" class="p-1 text-slate-300 hover:text-rose-600 transition" title="<?= lang('App.delete_category') ?>">
                                 <i class="bi bi-trash"></i>
                             </button>
                         </form>
@@ -49,11 +49,11 @@
 
             <div class="flex items-center justify-between pt-3 border-t border-slate-100 text-xs">
                 <span class="font-semibold text-slate-600">
-                    <i class="bi bi-people-fill text-indigo-600 mr-1"></i><?= esc($cat['provider_count']) ?> vendors
+                    <i class="bi bi-people-fill text-indigo-600 mr-1"></i><?= lang('App.vendors_count', [esc($cat['provider_count'])]) ?>
                 </span>
                 <a href="<?= site_url('providers?category_id=' . $cat['id']) ?>"
                    class="font-semibold text-indigo-600 hover:text-indigo-800 transition">
-                    Browse Vendors &rarr;
+                    <?= lang('App.browse_vendors') ?> &rarr;
                 </a>
             </div>
         </div>

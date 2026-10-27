@@ -66,17 +66,20 @@
                     $eventDate = new DateTime($event['event_date']);
                     $today = new DateTime('today');
                     $diff = (int) $today->diff($eventDate)->format('%r%a');
+                    $locale = service('request')->getLocale();
+                    $eventTime = \CodeIgniter\I18n\Time::parse($event['event_date'], null, $locale);
+                    $formattedEventDate = ucfirst($eventTime->toLocalizedString(lang('App.date_format_full')));
                 ?>
                 <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold border <?= $badgeClass ?>">
                     <?= esc($translatedStatus) ?>
                 </span>
 
                 <?php if ($diff === 0): ?>
-                    <span class="px-2 py-0.5 rounded-full text-xs font-bold bg-rose-600 text-white">Today!</span>
+                    <span class="px-2 py-0.5 rounded-full text-xs font-bold bg-rose-600 text-white"><?= lang('App.time_today') ?></span>
                 <?php elseif ($diff > 0): ?>
-                    <span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-600 border border-slate-200">In <?= $diff ?> days</span>
+                    <span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-600 border border-slate-200"><?= lang('App.time_in_days', [$diff]) ?></span>
                 <?php else: ?>
-                    <span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-400 border border-slate-200"><?= abs($diff) ?> days ago</span>
+                    <span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-400 border border-slate-200"><?= lang('App.time_days_ago', [abs($diff)]) ?></span>
                 <?php endif; ?>
             </div>
 
@@ -87,7 +90,7 @@
             <div class="flex flex-wrap gap-x-6 gap-y-2 text-xs text-slate-600">
                 <div class="flex items-center gap-1.5">
                     <i class="bi bi-calendar3 text-indigo-600 text-sm"></i>
-                    <strong class="text-slate-900"><?= $eventDate->format('l, F j, Y') ?></strong>
+                    <strong class="text-slate-900"><?= esc($formattedEventDate) ?></strong>
                 </div>
                 <?php if ($event['start_time']): ?>
                     <div class="flex items-center gap-1.5">
@@ -195,8 +198,8 @@
         $barColor = $event['budget_variance'] < 0 ? 'bg-rose-500' : 'bg-indigo-600';
     ?>
     <div class="flex items-center justify-between text-xs text-slate-500 mb-1.5 font-medium">
-        <span>Allocation: <?= $budgetPercent ?>% of target budget</span>
-        <span>Deposits cleared: <?= $paidPercent ?>%</span>
+        <span><?= lang('App.budget_allocation_progress', [$budgetPercent]) ?></span>
+        <span><?= lang('App.deposits_cleared_progress', [$paidPercent]) ?></span>
     </div>
     <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
         <div class="<?= $barColor ?> h-2.5 rounded-full transition-all" style="width: <?= min($budgetPercent, 100) ?>%"></div>
@@ -242,7 +245,7 @@
                             <th class="px-4 py-3.5"><?= lang('App.col_deposit') ?></th>
                             <th class="px-4 py-3.5"><?= lang('App.col_balance') ?></th>
                             <th class="px-4 py-3.5"><?= lang('App.col_deposit_status') ?></th>
-                            <th class="px-4 py-3.5">Contract</th>
+                            <th class="px-4 py-3.5"><?= lang('App.col_contract') ?></th>
                             <th class="px-6 py-3.5 text-right"><?= lang('App.actions') ?></th>
                         </tr>
                     </thead>
@@ -256,6 +259,18 @@
                                     'pending' => 'bg-rose-50 text-rose-700 border-rose-200',
                                 ];
                                 $payClass = $payBadge[$ep['payment_status']] ?? 'bg-slate-100 text-slate-700';
+
+                                $payKey = 'App.payment_' . $ep['payment_status'];
+                                $translatedPayment = lang($payKey);
+                                if ($translatedPayment === $payKey) {
+                                    $translatedPayment = ucfirst($ep['payment_status']);
+                                }
+
+                                $contractKey = 'App.contract_' . $ep['contract_status'];
+                                $translatedContract = lang($contractKey);
+                                if ($translatedContract === $contractKey) {
+                                    $translatedContract = ucfirst($ep['contract_status']);
+                                }
                             ?>
                             <tr class="hover:bg-slate-50/80 transition">
                                 <td class="px-6 py-4">
@@ -267,12 +282,12 @@
                                             <a href="<?= site_url('providers/' . $ep['provider_id']) ?>" class="font-bold text-slate-900 hover:text-indigo-600 transition block">
                                                 <?= esc($ep['provider_name']) ?>
                                             </a>
-                                            <span class="text-xs text-slate-400"><?= esc($ep['category_name'] ?? 'General') ?></span>
+                                            <span class="text-xs text-slate-400"><?= esc($ep['category_name'] ?? lang('App.category_general')) ?></span>
                                         </div>
                                     </div>
                                 </td>
                                 <td class="px-4 py-4">
-                                    <div class="text-xs font-medium text-slate-800"><?= esc($ep['service_description'] ?? 'Event Service') ?></div>
+                                    <div class="text-xs font-medium text-slate-800"><?= esc($ep['service_description'] ?: lang('App.service_default_desc')) ?></div>
                                     <?php if (!empty($ep['notes'])): ?>
                                         <div class="text-[11px] text-slate-400 truncate max-w-[200px]" title="<?= esc($ep['notes']) ?>">
                                             <?= esc($ep['notes']) ?>
@@ -289,23 +304,23 @@
                                     $<?= number_format($balance, 2) ?>
                                 </td>
                                 <td class="px-4 py-4 whitespace-nowrap">
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold border <?= $payClass ?> capitalize">
-                                        <?= esc($ep['payment_status']) ?>
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold border <?= $payClass ?>">
+                                        <?= esc($translatedPayment) ?>
                                     </span>
                                 </td>
                                 <td class="px-4 py-4 whitespace-nowrap">
-                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium bg-slate-100 text-slate-600 border border-slate-200 capitalize">
-                                        <i class="bi bi-file-earmark-text text-[10px]"></i> <?= esc($ep['contract_status']) ?>
+                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium bg-slate-100 text-slate-600 border border-slate-200">
+                                        <i class="bi bi-file-earmark-text text-[10px]"></i> <?= esc($translatedContract) ?>
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 text-right whitespace-nowrap">
                                     <div class="inline-flex items-center gap-1.5">
                                         <button type="button" onclick="openModal('modal-edit-prov-<?= $ep['id'] ?>')"
-                                                class="p-1.5 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition" title="Edit Assignment">
+                                                class="p-1.5 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition" title="<?= lang('App.edit_assignment') ?>">
                                             <i class="bi bi-pencil"></i>
                                         </button>
                                         <button type="button" onclick="openModal('modal-remove-prov-<?= $ep['id'] ?>')"
-                                                class="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition" title="Remove Assignment">
+                                                class="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition" title="<?= lang('App.remove_assignment') ?>">
                                             <i class="bi bi-x-lg"></i>
                                         </button>
                                     </div>
@@ -316,7 +331,7 @@
                                             <form method="post" action="<?= site_url('events/' . $event['id'] . '/providers/' . $ep['id']) ?>">
                                                 <?= csrf_field() ?>
                                                 <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
-                                                    <h3 class="text-base font-bold text-slate-900">Edit Assignment: <?= esc($ep['provider_name']) ?></h3>
+                                                    <h3 class="text-base font-bold text-slate-900"><?= lang('App.modal_edit_assign_title') ?>: <?= esc($ep['provider_name']) ?></h3>
                                                     <button type="button" onclick="closeModal('modal-edit-prov-<?= $ep['id'] ?>')" class="text-slate-400 hover:text-slate-600">
                                                         <i class="bi bi-x-lg"></i>
                                                     </button>
@@ -324,19 +339,19 @@
 
                                                 <div class="space-y-4 text-sm">
                                                     <div>
-                                                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Service Description</label>
+                                                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1"><?= lang('App.service_description') ?></label>
                                                         <input type="text" name="service_description" value="<?= esc($ep['service_description']) ?>"
                                                                class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:border-indigo-500 transition">
                                                     </div>
 
                                                     <div class="grid grid-cols-2 gap-3">
                                                         <div>
-                                                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Agreed Fee ($)</label>
+                                                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1"><?= lang('App.agreed_cost') ?></label>
                                                             <input type="number" step="0.01" min="0" name="agreed_cost" value="<?= esc($ep['agreed_cost']) ?>"
                                                                    class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:border-indigo-500 transition">
                                                         </div>
                                                         <div>
-                                                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Deposit Paid ($)</label>
+                                                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1"><?= lang('App.deposit_paid') ?></label>
                                                             <input type="number" step="0.01" min="0" name="deposit_paid" value="<?= esc($ep['deposit_paid']) ?>"
                                                                    class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:border-indigo-500 transition">
                                                         </div>
@@ -344,26 +359,26 @@
 
                                                     <div class="grid grid-cols-2 gap-3">
                                                         <div>
-                                                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Payment Status</label>
+                                                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1"><?= lang('App.payment_status') ?></label>
                                                             <select name="payment_status" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:border-indigo-500 transition">
-                                                                <option value="pending" <?= $ep['payment_status'] === 'pending' ? 'selected' : '' ?>>Pending</option>
-                                                                <option value="partial" <?= $ep['payment_status'] === 'partial' ? 'selected' : '' ?>>Partial</option>
-                                                                <option value="paid" <?= $ep['payment_status'] === 'paid' ? 'selected' : '' ?>>Paid in Full</option>
+                                                                <option value="pending" <?= $ep['payment_status'] === 'pending' ? 'selected' : '' ?>><?= lang('App.payment_pending') ?></option>
+                                                                <option value="partial" <?= $ep['payment_status'] === 'partial' ? 'selected' : '' ?>><?= lang('App.payment_partial') ?></option>
+                                                                <option value="paid" <?= $ep['payment_status'] === 'paid' ? 'selected' : '' ?>><?= lang('App.payment_paid') ?></option>
                                                             </select>
                                                         </div>
                                                         <div>
-                                                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Contract Status</label>
+                                                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1"><?= lang('App.contract_status') ?></label>
                                                             <select name="contract_status" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:border-indigo-500 transition">
-                                                                <option value="draft" <?= $ep['contract_status'] === 'draft' ? 'selected' : '' ?>>Draft</option>
-                                                                <option value="sent" <?= $ep['contract_status'] === 'sent' ? 'selected' : '' ?>>Sent</option>
-                                                                <option value="signed" <?= $ep['contract_status'] === 'signed' ? 'selected' : '' ?>>Signed</option>
-                                                                <option value="completed" <?= $ep['contract_status'] === 'completed' ? 'selected' : '' ?>>Completed</option>
+                                                                <option value="draft" <?= $ep['contract_status'] === 'draft' ? 'selected' : '' ?>><?= lang('App.contract_draft') ?></option>
+                                                                <option value="sent" <?= $ep['contract_status'] === 'sent' ? 'selected' : '' ?>><?= lang('App.contract_sent') ?></option>
+                                                                <option value="signed" <?= $ep['contract_status'] === 'signed' ? 'selected' : '' ?>><?= lang('App.contract_signed') ?></option>
+                                                                <option value="completed" <?= $ep['contract_status'] === 'completed' ? 'selected' : '' ?>><?= lang('App.contract_completed') ?></option>
                                                             </select>
                                                         </div>
                                                     </div>
 
                                                     <div>
-                                                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Notes / Terms</label>
+                                                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1"><?= lang('App.notes_terms') ?></label>
                                                         <textarea name="notes" rows="2" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:border-indigo-500 transition"><?= esc($ep['notes']) ?></textarea>
                                                     </div>
                                                 </div>
@@ -371,10 +386,10 @@
                                                 <div class="flex items-center justify-end gap-2.5 mt-6 pt-4 border-t border-slate-100">
                                                     <button type="button" onclick="closeModal('modal-edit-prov-<?= $ep['id'] ?>')"
                                                             class="px-4 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition">
-                                                        Cancel
+                                                        <?= lang('App.cancel') ?>
                                                     </button>
                                                     <button type="submit" class="px-4 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl transition">
-                                                        Save Changes
+                                                        <?= lang('App.save_changes') ?>
                                                     </button>
                                                 </div>
                                             </form>
@@ -392,19 +407,19 @@
                                                     <i class="bi bi-x-lg"></i>
                                                 </button>
                                             </div>
-                                            <h3 class="text-lg font-bold text-slate-900">Remove Provider?</h3>
+                                            <h3 class="text-lg font-bold text-slate-900"><?= lang('App.remove_provider_title') ?></h3>
                                             <p class="text-sm text-slate-500 mt-2">
-                                                Are you sure you want to unassign <strong><?= esc($ep['provider_name']) ?></strong> from this event?
+                                                <?= lang('App.remove_provider_modal_confirm', ['<strong>' . esc($ep['provider_name']) . '</strong>']) ?>
                                             </p>
                                             <div class="flex items-center justify-end gap-2.5 mt-6 pt-4 border-t border-slate-100">
                                                 <button type="button" onclick="closeModal('modal-remove-prov-<?= $ep['id'] ?>')"
                                                         class="px-4 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition">
-                                                    Cancel
+                                                    <?= lang('App.cancel') ?>
                                                 </button>
                                                 <form method="post" action="<?= site_url('events/' . $event['id'] . '/providers/' . $ep['id'] . '/delete') ?>">
                                                     <?= csrf_field() ?>
                                                     <button type="submit" class="px-4 py-2 text-xs font-semibold text-white bg-rose-600 hover:bg-rose-700 rounded-xl transition">
-                                                        Yes, Remove
+                                                        <?= lang('App.yes_remove') ?>
                                                     </button>
                                                 </form>
                                             </div>
@@ -471,7 +486,11 @@
                                         </span>
                                     <?php endif; ?>
                                     <?php if ($task['due_date']): ?>
-                                        <span><i class="bi bi-calendar-event mr-1 text-slate-400"></i><?= lang('App.due') ?> <?= date('M j, Y', strtotime($task['due_date'])) ?></span>
+                                        <?php
+                                            $taskTime = \CodeIgniter\I18n\Time::parse($task['due_date'], null, $locale);
+                                            $formattedTaskDue = $taskTime->toLocalizedString(lang('App.date_format_medium'));
+                                        ?>
+                                        <span><i class="bi bi-calendar-event mr-1 text-slate-400"></i><?= lang('App.due') ?> <?= esc($formattedTaskDue) ?></span>
                                     <?php endif; ?>
                                     <?php if ($task['priority'] === 'high'): ?>
                                         <span class="px-1.5 py-0.2 rounded bg-rose-50 text-rose-600 font-bold text-[10px]"><?= lang('App.priority_high') ?></span>
@@ -547,19 +566,20 @@
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1"><?= lang('App.col_deposit_status') ?></label>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1"><?= lang('App.payment_status') ?></label>
                         <select name="payment_status" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:border-indigo-500 transition">
-                            <option value="pending"><?= lang('App.status_unpaid') ?></option>
-                            <option value="partial"><?= lang('App.status_partial') ?></option>
-                            <option value="paid"><?= lang('App.status_paid_full') ?></option>
+                            <option value="pending"><?= lang('App.payment_pending') ?></option>
+                            <option value="partial"><?= lang('App.payment_partial') ?></option>
+                            <option value="paid"><?= lang('App.payment_paid') ?></option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Contract Status</label>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1"><?= lang('App.contract_status') ?></label>
                         <select name="contract_status" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:border-indigo-500 transition">
-                            <option value="draft">Draft</option>
-                            <option value="sent">Contract Sent</option>
-                            <option value="signed">Contract Signed</option>
+                            <option value="draft"><?= lang('App.contract_draft') ?></option>
+                            <option value="sent"><?= lang('App.contract_sent') ?></option>
+                            <option value="signed"><?= lang('App.contract_signed') ?></option>
+                            <option value="completed"><?= lang('App.contract_completed') ?></option>
                         </select>
                     </div>
                 </div>
