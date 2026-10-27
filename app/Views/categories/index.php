@@ -60,6 +60,34 @@
     <?php endforeach; ?>
 </div>
 
+<?php
+    $locale = service('request')->getLocale();
+    $iconOptions = [
+        'bi-tag'               => ['en' => 'General / Other',             'es' => 'General / Otro'],
+        'bi-cup-hot'           => ['en' => 'Catering & Beverages',        'es' => 'Banquetería y Bebidas'],
+        'bi-buildings'         => ['en' => 'Venues & Locations',          'es' => 'Salones y Lugares'],
+        'bi-music-note-beamed' => ['en' => 'Music & DJ Entertainment',    'es' => 'Música y DJs'],
+        'bi-camera'            => ['en' => 'Photography',                 'es' => 'Fotografía'],
+        'bi-camera-reels'      => ['en' => 'Videography & Film',          'es' => 'Videografía y Cine'],
+        'bi-flower1'           => ['en' => 'Florist & Floral Decor',      'es' => 'Floristería y Decoración'],
+        'bi-speaker'           => ['en' => 'Audio & Sound Systems',       'es' => 'Audio y Sonido'],
+        'bi-lightbulb'         => ['en' => 'Lighting & Stage FX',         'es' => 'Iluminación y Efectos'],
+        'bi-truck'             => ['en' => 'Transport & Limousines',      'es' => 'Transporte y Limosinas'],
+        'bi-cake2'             => ['en' => 'Cakes & Bakery',              'es' => 'Pastelería y Tortas'],
+        'bi-balloon'           => ['en' => 'Party & Balloons',            'es' => 'Decoración con Globos'],
+        'bi-shield-check'      => ['en' => 'Security & Staffing',         'es' => 'Seguridad y Personal'],
+        'bi-person-badge'      => ['en' => 'Coordination & Planning',     'es' => 'Coordinación y Planificación'],
+        'bi-envelope-paper'    => ['en' => 'Invitations & Stationery',     'es' => 'Invitaciones y Papelería'],
+        'bi-palette'           => ['en' => 'Design & Styling',            'es' => 'Diseño y Ambientación'],
+        'bi-gift'              => ['en' => 'Favors & Gifts',              'es' => 'Recuerdos y Regalos'],
+        'bi-stars'             => ['en' => 'Special Effects & Sparklers', 'es' => 'Efectos Especiales y Chispas'],
+        'bi-gem'               => ['en' => 'Jewelry & Bridal Attire',     'es' => 'Joyería y Vestuario'],
+        'bi-scissors'          => ['en' => 'Hair & Makeup Styling',       'es' => 'Peluquería y Maquillaje'],
+        'bi-fire'              => ['en' => 'BBQ & Open Flame Grill',      'es' => 'Parrilladas y Asados'],
+        'bi-umbrella'          => ['en' => 'Outdoor Tents & Canopies',    'es' => 'Carpas y Toldos'],
+    ];
+?>
+
 <!-- MODAL: ADD CATEGORY -->
 <div id="modal-add-category" data-modal-backdrop class="hidden fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl text-left border border-slate-200" onclick="event.stopPropagation()">
@@ -86,11 +114,18 @@
                         <?= lang('App.category_icon') ?>
                     </label>
                     <div class="relative">
-                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 pointer-events-none">
-                            <i class="bi bi-stars"></i>
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-indigo-600 pointer-events-none text-base">
+                            <i id="category-icon-preview" class="bi bi-tag"></i>
                         </span>
-                        <input type="text" name="icon" value="bi-tag"
-                               class="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:border-indigo-500 transition">
+                        <select name="icon" id="category-icon-select"
+                                onchange="document.getElementById('category-icon-preview').className = 'bi ' + this.value"
+                                class="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:border-indigo-500 transition text-sm cursor-pointer">
+                            <?php foreach ($iconOptions as $iconClass => $names): ?>
+                                <option value="<?= $iconClass ?>" <?= $iconClass === 'bi-tag' ? 'selected' : '' ?>>
+                                    <?= esc($names[$locale] ?? $names['en']) ?> (<?= esc($iconClass) ?>)
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
                     </div>
                     <p class="text-[11px] text-slate-400 mt-1"><?= lang('App.category_icon_hint') ?></p>
                 </div>
